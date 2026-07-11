@@ -2,24 +2,24 @@
 document.addEventListener('DOMContentLoaded', () => {
   const resourcesPath = '/resources';
   const imageDirectory = `${resourcesPath}/DistanceVSEffort_Images`;
-  const imagesDataPath = `${resourcesPath}/DistanceVSEffort_ImageList.json`; // Path to the JSON file containing image data
-  fetch(imagesDataPath)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      initializeApp(data);
-    })
+  const dataDirectory = `${resourcesPath}/dve`;
+  const imageChunks = new Map();
+
+  async function fetchJson(path) {
+    const response = await fetch(path);
+    if (!response.ok) throw new Error(`Unable to load ${path}: ${response.status}`);
+    return response.json();
+  }
+
+  fetchJson(`${dataDirectory}/index.json`)
+    .then(initializeApp)
     .catch(error => {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching visualizer catalog:', error);
       alert('Failed to load image data. Please try again later.');
     });
-  function initializeApp(images) {
+
+  function initializeApp(catalog) {
     const imageDropdown = document.getElementById('image-dropdown');
-    const uniqueImageNames = [...new Set(images.map(image => image.Name))];
     const imageElement = document.getElementById('image');
     const imageViewport = document.getElementById('image-viewport');
     const fallbackNotice = document.getElementById('jxl-fallback-notice');
@@ -46,13 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let panStartY = 0;
     let panOriginX = 0;
     let panOriginY = 0;
-    uniqueImageNames.forEach(name => {
+    let isLosslessPreview = false;
+
+    let currentImage;
+    let loadVersion = 0;
+
+    catalog.images.forEach(image => {
       const option = document.createElement('option');
-      option.value = name;
-      option.textContent = name;
+      option.value = image.id;
+      option.textContent = image.name;
       imageDropdown.appendChild(option);
     });
-    imageDropdown.addEventListener('change', handleImageChange);
+
+    imageDropdown.addEventListener('change', () => loadImage(imageDropdown.value));
     effortSlider.addEventListener('input', handleEffortChange);
     slider.addEventListener('input', handleDistanceChange);
     zoomSlider.addEventListener('input', handleZoomChange);
@@ -65,36 +71,85 @@ document.addEventListener('DOMContentLoaded', () => {
     imageViewport.addEventListener('pointerup', endPan);
     imageViewport.addEventListener('pointercancel', endPan);
     imageViewport.addEventListener('lostpointercapture', endPan);
-    function handleImageChange() {
-      const selectedImageName = imageDropdown.value;
-      currentEffortIndex = 0; // Reset effort slider position
-      const efforts = initializeEffortSlider(selectedImageName);
-      updateSlidersAndImage(selectedImageName, efforts[0]);
+    window.addEventListener('keydown', event => {
+      if (event.key === 'Shift' && !event.repeat) setLosslessPreview(true);
+    });
+    window.addEventListener('keyup', event => {
+      if (event.key === 'Shift') setLosslessPreview(false);
+    });
+    window.addEventListener('blur', () => setLosslessPreview(false));
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) setLosslessPreview(false);
+    });
+
+    async function loadImage(id) {
+      const requestVersion = ++loadVersion;
+      imageDropdown.disabled = true;
+      effortSlider.disabled = true;
+      slider.disabled = true;
+
+      try {
+        const image = await getImageChunk(id);
+        if (requestVersion !== loadVersion) return;
+
+        currentImage = image;
+        currentEffortIndex = 0;
+        currentImageIndex = 0;
+        previousDistance = 0;
+        const efforts = initializeEffortSlider();
+        updateSlidersAndImage(efforts[0]);
+      } catch (error) {
+        console.error(`Error fetching image data for ${id}:`, error);
+        alert('Failed to load this image. Please try another one.');
+      } finally {
+        if (requestVersion === loadVersion) {
+          imageDropdown.disabled = false;
+          effortSlider.disabled = false;
+          slider.disabled = false;
+        }
+      }
     }
+
+    function getImageChunk(id) {
+      if (!imageChunks.has(id)) {
+        imageChunks.set(id, fetchJson(`${dataDirectory}/${id}.json`));
+      }
+      return imageChunks.get(id);
+    }
+
+    function setLosslessPreview(enabled) {
+      if (isLosslessPreview === enabled) return;
+      isLosslessPreview = enabled;
+      if (!currentImage) return;
+
+      const efforts = initializeEffortSlider();
+      const effort = efforts[currentEffortIndex];
+      const { variants } = initializeDistanceSlider(effort);
+      updateImageAndInfo(currentImageIndex, variants, effort);
+    }
+
     function handleEffortChange() {
       currentEffortIndex = parseInt(effortSlider.value, 10);
-      const selectedImageName = imageDropdown.value;
-      const efforts = initializeEffortSlider(selectedImageName);
-      const { distances } = initializeDistanceSlider(selectedImageName, efforts[currentEffortIndex]);
+      const efforts = initializeEffortSlider();
+      const { distances, variants } = initializeDistanceSlider(efforts[currentEffortIndex]);
       // Find the closest matching distance to the previous distance
       const closestDistanceIndex = findClosestDistanceIndex(distances, previousDistance);
       currentImageIndex = closestDistanceIndex;
       slider.value = currentImageIndex;
-      updateImageAndInfo(currentImageIndex, distances, images.filter(image => image.Name === selectedImageName && image.Effort === efforts[currentEffortIndex]));
+      updateImageAndInfo(currentImageIndex, variants, efforts[currentEffortIndex]);
       effortLabel.textContent = `Effort: ${efforts[currentEffortIndex]}`;
       updateDistanceLabel(distances[currentImageIndex]);
     }
     function handleDistanceChange() {
       currentImageIndex = parseInt(slider.value, 10);
-      const selectedImageName = imageDropdown.value;
-      const efforts = initializeEffortSlider(selectedImageName);
-      const { distances, filteredImages } = initializeDistanceSlider(selectedImageName, efforts[currentEffortIndex]);
+      const efforts = initializeEffortSlider();
+      const { distances, variants } = initializeDistanceSlider(efforts[currentEffortIndex]);
       previousDistance = distances[currentImageIndex]; // Store the current distance
-      updateImageAndInfo(currentImageIndex, distances, filteredImages);
+      updateImageAndInfo(currentImageIndex, variants, efforts[currentEffortIndex]);
       updateDistanceLabel(distances[currentImageIndex]);
     }
-    function initializeEffortSlider(imageName) {
-      const efforts = [...new Set(images.filter(image => image.Name === imageName).map(image => image.Effort))].sort((a, b) => b - a);
+    function initializeEffortSlider() {
+      const efforts = Object.keys(currentImage.efforts).map(Number).sort((a, b) => b - a);
       effortSlider.min = 0;
       effortSlider.max = efforts.length - 1;
       effortSliderLabels.innerHTML = '';
@@ -106,9 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
       effortLabel.textContent = `Effort: ${efforts[currentEffortIndex]}`;
       return efforts;
     }
-    function initializeDistanceSlider(imageName, effort) {
-      const filteredImages = images.filter(image => image.Name === imageName && image.Effort === effort);
-      const distances = [...new Set(filteredImages.map(image => image.Quality))].sort((a, b) => a - b);
+    function initializeDistanceSlider(effort) {
+      const variants = currentImage.efforts[String(effort)] ?? [];
+      const distances = variants.map(variant => variant[0]);
       slider.min = 0;
       slider.max = distances.length - 1;
       sliderLabels.innerHTML = '';
@@ -120,32 +175,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       updateDistanceLabel(distances[currentImageIndex]);
-      return { distances, filteredImages };
+      return { distances, variants };
     }
-    function updateSlidersAndImage(imageName, effort) {
-      const { distances, filteredImages } = initializeDistanceSlider(imageName, effort);
-      updateImageAndInfo(currentImageIndex, distances, filteredImages);
+    function updateSlidersAndImage(effort) {
+      const { variants } = initializeDistanceSlider(effort);
+      updateImageAndInfo(currentImageIndex, variants, effort);
     }
-    function updateImageAndInfo(imageIndex, distances, filteredImages) {
-      const distance = distances[imageIndex];
-      const effort = filteredImages[0].Effort;
-      const imageData = filteredImages.find(image => image.Quality === distance && image.Effort === effort);
+    function updateImageAndInfo(imageIndex, variants, effort) {
+      const imageData = isLosslessPreview
+        ? variants.find(([quality]) => quality === 0) ?? variants[imageIndex]
+        : variants[imageIndex];
+      const [quality, fileName, size, encodingSpeed, bpp, ssim] = imageData;
       fallbackNotice.hidden = true;
       imageElement.onerror = () => {
         imageElement.onerror = null;
         fallbackNotice.hidden = false;
-        imageElement.src = getFallbackImagePath(imageData);
+        imageElement.src = getFallbackImagePath();
       };
-      imageElement.src = `${imageDirectory}/${imageData.FileName}`;
-      imageElement.alt = `Name: ${imageData.Name} Distance: ${distance} Effort: ${effort}`;
-      sizeSpan.textContent = imageData.Size.toLocaleString(); // Format size with commas
-      bppSpan.textContent = parseFloat(imageData.BPP).toFixed(2); // Limit BPP to 2 decimals
-      ssimSpan.textContent = parseFloat(imageData.SSIMU2).toFixed(2); // Limit SSIMU2 to 2 decimals
-      const compressionTime = (imageData.Pixels / 1000000) / imageData["E-Speed"];
+      imageElement.src = `${imageDirectory}/${fileName}`;
+      const previewLabel = isLosslessPreview ? 'Lossless preview. ' : '';
+      imageElement.alt = `${previewLabel}Name: ${currentImage.name} Distance: ${quality} Effort: ${effort}`;
+      sizeSpan.textContent = size.toLocaleString(); // Format size with commas
+      bppSpan.textContent = Number(bpp).toFixed(2); // Limit BPP to 2 decimals
+      ssimSpan.textContent = Number(ssim).toFixed(2); // Limit SSIMU2 to 2 decimals
+      const compressionTime = (currentImage.pixels / 1000000) / encodingSpeed;
       compressionTimeSpan.textContent = compressionTime.toFixed(3); // Limit to 3 decimals
     }
-    function getFallbackImagePath(imageData) {
-      return `${imageDirectory}/webp_fallback/${imageData.Image}.d0.3.webp`;
+    function getFallbackImagePath() {
+      return `${imageDirectory}/webp_fallback/${currentImage.source}.d0.3.webp`;
     }
     function handleZoomChange() {
       const nextZoom = parseFloat(zoomSlider.value);
@@ -227,6 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
         distanceLabel.textContent = `Distance: ${distance.toFixed(1)}`;
       }
     }
-    handleImageChange(); // Initialize with the first image
+    loadImage(catalog.defaultImage); // Initialize with the default image
   }
 });

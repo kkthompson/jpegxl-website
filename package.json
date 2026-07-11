@@ -3,8 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "generate:distance-data": "node scripts/generate-distance-data.mjs",
+    "predev": "npm run generate:distance-data",
     "dev": "astro dev",
-    "build": "rm -rf dist && ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "prebuild": "npm run generate:distance-data",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
     "check": "astro check"
   },

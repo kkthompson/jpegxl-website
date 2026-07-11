@@ -1,5 +1,4 @@
-<nav class="navbar-2-component">
-  <input type="checkbox" name="navbar-dropdown" id="navbar-dropdown" aria-label="Toggle navigation menu" />
+<nav class="navbar-2-component" aria-label="Main navigation">
   <div class="navbar-container-menu-top">
     <div class="navbar-2-container">
       <a href="/index.html" class="navbar_logo-link w-nav-brand">
@@ -13,60 +12,74 @@
       </a>
 
       <!-- Desktop navigation -->
-      <div class="navbar-desktop-items" role="menubar" aria-label="Main navigation">
-        <div class="navbar-desktop-item" role="none">
-          <button type="button" class="navbar-desktop-trigger" role="menuitem" aria-haspopup="true" aria-expanded="false">
+      <div class="navbar-desktop-items">
+        <div class="navbar-desktop-item">
+          <button
+            type="button"
+            class="navbar-desktop-trigger"
+            aria-controls="navbar-information"
+            aria-expanded="false"
+          >
             Information
             <svg class="navbar-chevron" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
               <path d="m7 10 5 5 5-5z"></path>
             </svg>
           </button>
-          <div class="navbar-desktop-dropdown" role="menu" aria-label="Information">
-            <a href="/media/newsroom.html" role="menuitem">Articles &amp; Coverage</a>
-            <a href="/resources/software-support.html" role="menuitem">Software Support</a>
-            <a href="/resources/battle-of-codecs.html" role="menuitem">Battle of the Codecs</a>
-            <a href="/resources/faqs.html" role="menuitem">FAQs</a>
-            <a href="/resources/glossary.html" role="menuitem">Glossary</a>
+          <div id="navbar-information" class="navbar-desktop-dropdown">
+            <a href="/media/newsroom.html">Articles &amp; Coverage</a>
+            <a href="/resources/software-support.html">Software Support</a>
+            <a href="/resources/battle-of-codecs.html">Battle of the Codecs</a>
+            <a href="/resources/faqs.html">FAQs</a>
+            <a href="/resources/glossary.html">Glossary</a>
           </div>
         </div>
 
-        <div class="navbar-desktop-item" role="none">
-          <button type="button" class="navbar-desktop-trigger" role="menuitem" aria-haspopup="true" aria-expanded="false">
+        <div class="navbar-desktop-item">
+          <button
+            type="button"
+            class="navbar-desktop-trigger"
+            aria-controls="navbar-explore"
+            aria-expanded="false"
+          >
             Explore
             <svg class="navbar-chevron" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
               <path d="m7 10 5 5 5-5z"></path>
             </svg>
           </button>
-          <div class="navbar-desktop-dropdown" role="menu" aria-label="Explore">
-            <a href="/resources/jpeg-xl-test-page.html" role="menuitem">JPEG XL Test Page</a>
-            <a href="/resources/distance-vs-effort-visualizer.html" role="menuitem">Distance vs. Effort Visualizer</a>
-            <a href="/resources/hdr-test-page.html" role="menuitem">HDR Test Page</a>
-            <a href="/art/" role="menuitem">JXL Art Gallery</a>
-            <a href="/art/big_gallery.html" role="menuitem" class="navbar-desktop-subitem">Main Gallery (SDR)</a>
-            <a href="/art/hdr.html" role="menuitem" class="navbar-desktop-subitem">HDR Gallery</a>
-            <a href="https://jxl-art.lucaversari.it/" target="_blank" rel="noopener noreferrer" role="menuitem" class="navbar-desktop-subitem">Create Your Own</a>
-            <a href="/art/#about-jxl-art" role="menuitem" class="navbar-desktop-subitem">About JXL Art</a>
+          <div id="navbar-explore" class="navbar-desktop-dropdown">
+            <a href="/resources/jpeg-xl-test-page.html">JPEG XL Test Page</a>
+            <a href="/resources/distance-vs-effort-visualizer.html">Distance vs. Effort Visualizer</a>
+            <a href="/resources/hdr-test-page.html">HDR Test Page</a>
+            <a href="/art/">JXL Art Gallery</a>
+            <a href="/art/big_gallery.html" class="navbar-desktop-subitem">Main Gallery (SDR)</a>
+            <a href="/art/hdr.html" class="navbar-desktop-subitem">HDR Gallery</a>
+            <a href="https://jxl-art.lucaversari.it/" target="_blank" rel="noopener noreferrer" class="navbar-desktop-subitem">Create Your Own</a>
+            <a href="/art/#about-jxl-art" class="navbar-desktop-subitem">About JXL Art</a>
           </div>
         </div>
 
-        <div class="navbar-desktop-item" role="none">
-          <button type="button" class="navbar-desktop-trigger" role="menuitem" aria-haspopup="true" aria-expanded="false">
+        <div class="navbar-desktop-item">
+          <button
+            type="button"
+            class="navbar-desktop-trigger"
+            aria-controls="navbar-about"
+            aria-expanded="false"
+          >
             About
             <svg class="navbar-chevron" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
               <path d="m7 10 5 5 5-5z"></path>
             </svg>
           </button>
-          <div class="navbar-desktop-dropdown" role="menu" aria-label="About">
-            <a href="/about/history.html" role="menuitem">History</a>
-            <a href="/about/contributors.html" role="menuitem">Contributors</a>
-            <a href="/about/photo-credits.html" role="menuitem">Photo Credits</a>
+          <div id="navbar-about" class="navbar-desktop-dropdown">
+            <a href="/about/history.html">History</a>
+            <a href="/about/contributors.html">Contributors</a>
+            <a href="/about/photo-credits.html">Photo Credits</a>
             <hr class="navbar-desktop-divider" />
             <div class="navbar-desktop-social">
               <a
                 href="https://discord.gg/DqkQgDRTFu"
                 target="_blank"
                 rel="noopener noreferrer"
-                role="menuitem"
                 aria-label="JPEG XL on Discord"
               >
                 <img src="/images/Icon-social-discord-black.svg" loading="lazy" alt="Discord" />
@@ -75,7 +88,6 @@
                 href="https://www.reddit.com/r/jpegxl"
                 target="_blank"
                 rel="noopener noreferrer"
-                role="menuitem"
                 aria-label="JPEG XL on Reddit"
               >
                 <img src="/images/Icon-social-reddit-black.svg" loading="lazy" alt="Reddit" />
@@ -84,7 +96,6 @@
                 href="https://x.com/jpegxl"
                 target="_blank"
                 rel="noopener noreferrer"
-                role="menuitem"
                 aria-label="JPEG XL on X (Twitter)"
               >
                 <img src="/images/Icon-social-x-twitter-black.svg" loading="lazy" alt="X (Twitter)" />
@@ -96,16 +107,26 @@
 
       <!-- Mobile hamburger toggle -->
       <div class="navbar_menu-items navbar-mobile-toggle">
-        <label for="navbar-dropdown" class="navbar-toggle navbar_link navbar-top w-inline-block button" aria-label="Toggle navigation menu"></label>
+        <button
+          id="navbar-mobile-trigger"
+          type="button"
+          class="navbar-toggle navbar_link navbar-top w-inline-block button"
+          aria-controls="navbar-mobile-menu"
+          aria-expanded="false"
+        >
+          <span class="sr-only">Open navigation menu</span>
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Mobile full-screen dropdown -->
-  <div class="container-navbar-dropdown-content">
+  <div id="navbar-mobile-menu" class="container-navbar-dropdown-content" hidden>
     <div class="container-navbar-content">
       <div class="navbar-close">
-        <label for="navbar-dropdown" class="navbar-toggle button" aria-label="Close navigation menu"></label>
+        <button id="navbar-mobile-close" type="button" class="navbar-toggle button" aria-label="Close navigation menu">
+          <span class="sr-only">Close navigation menu</span>
+        </button>
       </div>
       <div class="navbar-dropdown-content">
         <div class="container-column-vertical">
@@ -166,3 +187,99 @@
     </div>
   </div>
 </nav>
+
+<script>
+  const desktopItems = Array.from(document.querySelectorAll<HTMLElement>('.navbar-desktop-item'));
+  const mobileTrigger = document.querySelector<HTMLButtonElement>('#navbar-mobile-trigger');
+  const mobileMenu = document.querySelector<HTMLElement>('#navbar-mobile-menu');
+  const mobileClose = document.querySelector<HTMLButtonElement>('#navbar-mobile-close');
+  const mobileMedia = window.matchMedia('(max-width: 900px)');
+
+  function setDesktopMenu(item: HTMLElement, open: boolean) {
+    const trigger = item.querySelector<HTMLButtonElement>('.navbar-desktop-trigger');
+    item.classList.toggle('is-open', open);
+    trigger?.setAttribute('aria-expanded', String(open));
+  }
+
+  function closeDesktopMenus(except?: HTMLElement) {
+    desktopItems.forEach((item) => {
+      if (item !== except) setDesktopMenu(item, false);
+    });
+  }
+
+  desktopItems.forEach((item) => {
+    const trigger = item.querySelector<HTMLButtonElement>('.navbar-desktop-trigger');
+    const firstLink = item.querySelector<HTMLAnchorElement>('.navbar-desktop-dropdown a');
+    if (!trigger) return;
+
+    trigger.addEventListener('click', () => {
+      const willOpen = trigger.getAttribute('aria-expanded') !== 'true';
+      closeDesktopMenus(item);
+      setDesktopMenu(item, willOpen);
+    });
+
+    trigger.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        closeDesktopMenus(item);
+        setDesktopMenu(item, true);
+        firstLink?.focus();
+      }
+      if (event.key === 'Escape') {
+        setDesktopMenu(item, false);
+      }
+    });
+
+    item.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setDesktopMenu(item, false);
+        trigger.focus();
+      }
+    });
+
+    item.addEventListener('focusout', () => {
+      requestAnimationFrame(() => {
+        if (!item.contains(document.activeElement)) setDesktopMenu(item, false);
+      });
+    });
+  });
+
+  function setMobileMenu(open: boolean, moveFocus = false) {
+    if (!mobileTrigger || !mobileMenu) return;
+    mobileMenu.hidden = !open;
+    mobileTrigger.setAttribute('aria-expanded', String(open));
+    if (open && moveFocus) mobileClose?.focus();
+    if (!open && moveFocus) mobileTrigger.focus();
+  }
+
+  mobileTrigger?.addEventListener('click', () => {
+    setMobileMenu(mobileTrigger.getAttribute('aria-expanded') !== 'true', true);
+  });
+
+  mobileClose?.addEventListener('click', () => setMobileMenu(false, true));
+
+  mobileMenu?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => setMobileMenu(false));
+  });
+
+  document.addEventListener('pointerdown', (event) => {
+    if (
+      mobileMenu &&
+      !mobileMenu.hidden &&
+      !mobileMenu.contains(event.target as Node) &&
+      !mobileTrigger?.contains(event.target as Node)
+    ) {
+      setMobileMenu(false);
+    }
+
+    if (!desktopItems.some((item) => item.contains(event.target as Node))) closeDesktopMenus();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    closeDesktopMenus();
+    if (mobileMenu && !mobileMenu.hidden) setMobileMenu(false, true);
+  });
+
+  mobileMedia.addEventListener('change', () => setMobileMenu(false));
+</script>

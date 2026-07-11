@@ -243,22 +243,42 @@ let sd = 0;
                   color: var(--text--color--text-white);
               }
       
-              .enlarged-image-container {
-                  display: none;
-                  position: fixed;
-                  z-index: 1000;
-                  left: 50%;
-                  top: 50%;
-                  transform: translate(-50%, -50%);
+              .enlarged-image-dialog {
+                  max-width: 90vw;
+                  max-height: 90vh;
+                  padding: 0;
+                  border: 0;
+                  background: transparent;
                   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-                  cursor: pointer;
               }
-      
+
+              .enlarged-image-dialog::backdrop {
+                  background: rgba(0, 0, 0, 0.72);
+              }
+
               .enlarged-image {
                   display: block;
                   max-width: 90vw;
                   max-height: 90vh;
                   object-fit: contain;
+              }
+
+              .enlarged-image-close {
+                  position: absolute;
+                  top: 0.5rem;
+                  right: 0.5rem;
+                  width: 2.75rem;
+                  height: 2.75rem;
+                  border: 1px solid rgba(255, 255, 255, 0.65);
+                  border-radius: 50%;
+                  background: rgba(0, 0, 0, 0.72);
+                  color: white;
+                  font-size: 1.5rem;
+                  cursor: pointer;
+              }
+
+              .image-container img[role='button'] {
+                  cursor: zoom-in;
               }
     </style>
   </Fragment>
@@ -514,38 +534,43 @@ let sd = 0;
         </div>
         <div class="spacer-4rem"></div>
         <div class="spacer-4rem"></div>
+        <dialog id="enlarged-image-dialog" class="enlarged-image-dialog" aria-labelledby="enlarged-image-description">
+            <button type="button" class="enlarged-image-close" aria-label="Close enlarged image">×</button>
+            <img class="enlarged-image" src="" alt="">
+            <p id="enlarged-image-description" class="sr-only">Enlarged test image</p>
+        </dialog>
 <script is:inline>
 document.addEventListener('DOMContentLoaded', function () {
-            // Create enlarged image container
-            var enlargedContainer = document.createElement('div');
-            enlargedContainer.className = 'enlarged-image-container';
-            enlargedContainer.innerHTML = '<img class="enlarged-image" src="" alt="Enlarged image">';
-            document.body.appendChild(enlargedContainer);
+            var dialog = document.getElementById('enlarged-image-dialog');
+            var dialogImage = dialog.querySelector('.enlarged-image');
+            var dialogDescription = document.getElementById('enlarged-image-description');
+            var closeButton = dialog.querySelector('.enlarged-image-close');
 
-            var enlargedImg = enlargedContainer.querySelector('.enlarged-image');
+            function openImage(image) {
+                dialogImage.src = image.currentSrc || image.src;
+                dialogImage.alt = image.alt || 'Enlarged test image';
+                dialogDescription.textContent = dialogImage.alt;
+                dialog.showModal();
+                closeButton.focus();
+            }
 
-            // Add click event to all images in image-containers
-            var images = document.querySelectorAll('.image-container img');
-            images.forEach(function (img) {
-                img.addEventListener('click', function (event) {
-                    event.stopPropagation(); // Prevent the document click event from firing
-                    enlargedContainer.style.display = "block";
-                    enlargedImg.src = this.currentSrc || this.src;
+            document.querySelectorAll('.image-grid-container .image-container img').forEach(function (image) {
+                image.tabIndex = 0;
+                image.setAttribute('role', 'button');
+                image.setAttribute('aria-haspopup', 'dialog');
+                image.setAttribute('aria-label', 'Enlarge ' + (image.alt || 'test image'));
+                image.addEventListener('click', function () { openImage(image); });
+                image.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        openImage(image);
+                    }
                 });
             });
 
-            // Close the enlarged image when clicking anywhere on the document
-            document.addEventListener('click', function () {
-                if (enlargedContainer.style.display === "block") {
-                    enlargedContainer.style.display = "none";
-                }
-            });
-
-            // Close the enlarged image when pressing the Escape key
-            document.addEventListener('keydown', function (event) {
-                if (event.key === "Escape" && enlargedContainer.style.display === "block") {
-                    enlargedContainer.style.display = "none";
-                }
+            closeButton.addEventListener('click', function () { dialog.close(); });
+            dialog.addEventListener('click', function (event) {
+                if (event.target === dialog) dialog.close();
             });
         });
 </script>
