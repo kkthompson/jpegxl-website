@@ -1,0 +1,1812 @@
+/* Extracted from legacy root index.html <style> block.
+   Temporary during Astro migration; will be refactored. */
+
+.noise {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  /* Place it behind the content */
+  pointer-events: none;
+  /* Ensures noise is not interactive */
+}
+
+.container-grouped {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container-2col-span {
+  display: flex;
+  width: 100%;
+  max-width: 918px;
+  margin-inline: auto;
+  padding-inline: clamp(0.75rem, 3vw, 1.5rem);
+  gap: 0;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  justify-content: center;
+  position: relative;
+}
+
+.container-group-1col {
+  text-align: center;
+  position: relative;
+  flex: 1 1 0;
+  width: auto;
+  max-width: 448px;
+  min-width: 0;
+}
+
+.container-text.align-right {
+  align-items: flex-end;
+}
+
+.container-image-2col {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 448 / 540;
+}
+
+.container-image-2col img,
+.container-image-2col picture {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.6s ease-in-out;
+  opacity: 1;
+}
+
+.fade {
+  opacity: 0;
+}
+
+.dots-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-height: 100%;
+  padding-left: 0;
+  flex: 0 0 auto;
+  position: absolute;
+  right: clamp(0.5rem, 2vw, 1rem);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dots {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-left: 4px;
+}
+
+/* Fluid page padding + media sizing for the three sections called out */
+:root {
+  --home-fluid-pad: clamp(0.75rem, 4vw, 2.5rem);
+}
+
+/* ------------------------------------------------------------------ *
+ * Hero — fluid typography, gutters & background.
+ * Replaces the leftover Webflow breakpoint jumps (hard-locked widths,
+ * stepped sizes) with smooth clamp() scaling, consistent side gutters so
+ * text never touches the screen edges, and tidy balanced/pretty wrapping.
+ * Hero-scoped selectors (3 classes) outrank every Webflow media override.
+ * ------------------------------------------------------------------ */
+
+/* The photographic backdrop now lives on a fixed full-page layer (see
+   `.body::before` below), so the hero no longer paints its own copy. */
+.section-jpeg-xl-hero.gradient-bottom {
+  background-image: none;
+  background-attachment: scroll;
+}
+
+/* Site-wide fixed backdrop (homepage only — this sheet is page-scoped).
+   The hero photo is pinned to the viewport behind ALL page content and
+   feathers down into the page-black so lower content sits cleanly on black. */
+.body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  /* Faded out by JS as the page scrolls toward "Fast Encoding & Decoding". */
+  opacity: var(--hero-backdrop-opacity, 1);
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(24, 25, 27, 0) 0%,
+      rgba(24, 25, 27, 0) 40%,
+      rgba(24, 25, 27, 0.65) 72%,
+      var(--page-black) 96%
+    ),
+    image-set(
+      url('../images/kamran-abdullayev-black-background-unsplash.jxl') type('image/jxl'),
+      url('../images/kamran-abdullayev-black-background-unsplash.webp') type('image/webp')
+    );
+  background-repeat: no-repeat;
+  background-position: 50% 0;
+  background-size: cover;
+  pointer-events: none;
+}
+
+/* Let the fixed backdrop show through the page shell. */
+.page-wrapper {
+  background-color: transparent;
+  background-image: none;
+}
+
+/* Standard side gutters for every hero text block (kept off the full-bleed
+   wave graphic so it can still span edge to edge). */
+.section-jpeg-xl-hero .container-grouped,
+.section-jpeg-xl-hero .wrapper-text {
+  box-sizing: border-box;
+  padding-inline: var(--home-fluid-pad);
+}
+
+/* The hero container is also a Webflow .w-container (940px, → 728px at ≤991px),
+   which made the headline rewrap abruptly at that step. Uncap it; the hero
+   copy is already bounded by its own ch-based max-widths. */
+.section-jpeg-xl-hero .container-grouped.w-container {
+  width: 100%;
+  max-width: none;
+}
+
+/* "Welcome to the" */
+.section-jpeg-xl-hero .header-hero .text-l-regular {
+  font-size: clamp(1rem, 0.85rem + 0.9vw, 1.5rem);
+  line-height: 1.3;
+}
+
+/* "JPEG XL Community Site" and the "Smaller Files…" subhead */
+.section-jpeg-xl-hero .text-xxl-regular.centered.teal {
+  width: 100%;
+  max-width: 26ch;
+  margin-inline: auto;
+  font-size: clamp(1.5rem, 0.95rem + 2.4vw, 2.75rem);
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+/* Main gradient headline */
+.section-jpeg-xl-hero .display-xl-bold.fill-gradient {
+  width: 100%;
+  max-width: 20ch;
+  margin-inline: auto;
+  padding-inline: 0;
+  font-size: clamp(2rem, 1.1rem + 4.4vw, 5rem);
+  line-height: 1.03;
+  text-wrap: balance;
+}
+
+/* This column used to hard-lock to 15em on small screens, mangling the
+   subhead into a narrow ragged stack — let it scale instead. */
+.section-jpeg-xl-hero .container-column-1.width-15em {
+  width: 100%;
+  max-width: 32rem;
+  margin-inline: auto;
+}
+
+/* Body paragraphs */
+.section-jpeg-xl-hero .wrapper-text.centered.width-rem {
+  width: 100%;
+  max-width: 52rem;
+  margin-inline: auto;
+}
+
+.section-jpeg-xl-hero .text-xl-light.is-centered {
+  width: 100%;
+  font-size: clamp(1rem, 0.86rem + 0.7vw, 1.5rem);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------------ *
+ * Section body paragraphs (Visually Lossless, Wide-Gamut, Progressive,
+ * etc.) — same cleanup as the hero copy: smooth scaling, capped to the
+ * 896px media above them, balanced wrapping with no widows, and without
+ * Webflow's leftover keep-all / fixed-width quirks. Hero copy keeps its
+ * own (more specific) rules above.
+ * ------------------------------------------------------------------ */
+.wrapper-text.centered.width-rem {
+  width: 100%;
+  max-width: min(56rem, 100%);
+  margin-inline: auto;
+}
+
+.text-xl-light.is-centered {
+  width: 100%;
+  /* Cap the measure for comfortable reading; always narrower than the media. */
+  max-width: min(62ch, 100%);
+  margin-inline: auto;
+  /* 20px floor → 26px ceiling, scaling smoothly with the viewport. */
+  font-size: clamp(1.25rem, 1.125rem + 0.56vw, 1.625rem);
+  /* Barlow ships discrete weights only, so the weight steps rather than
+     interpolates: 400 while the type is small, 300 once it grows past ~960px. */
+  font-weight: 400;
+  /* em-based so the tracking keeps scaling with the type at every size
+     (Webflow otherwise zeroes this out at ≤479px). */
+  letter-spacing: -0.01em;
+  line-height: 1.55;
+  text-wrap: pretty;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 960px) {
+  .text-xl-light.is-centered {
+    font-weight: 300;
+  }
+}
+
+/* Feature-grid body copy ("And Much More", etc.) — balance the rag and avoid
+   widows the same way as the centered section paragraphs. */
+.text-l-medium {
+  text-wrap: pretty;
+}
+
+/* Format pills (JPEG / JPEG XL / WEBP / …) above the images — dark frosted
+   tint so the scrolling background is visible, blurred, beneath them. */
+.div-container-rounded_text_box {
+  background-color: rgba(48, 54, 62, 0.42);
+  -webkit-backdrop-filter: blur(10px) saturate(125%);
+  backdrop-filter: blur(10px) saturate(125%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* On small phones let the body paragraphs run closer to the screen edges
+   than the standard section gutter (they otherwise feel over-indented). */
+@media (max-width: 600px) {
+  .wrapper-text.centered.width-rem {
+    margin-inline: calc(0.5rem - var(--home-fluid-pad));
+  }
+
+  /* Hero copy keeps its normal gutter. */
+  .section-jpeg-xl-hero .wrapper-text.centered.width-rem {
+    margin-inline: auto;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Section headlines ("Capture Through Delivery", "Fast Encoding &
+ * Decoding", …) and their teal subheads. The base sizes are already
+ * fluid but bottom out at 2rem, so they stop shrinking and wrap awkwardly
+ * on small screens. Lower the floor + balance the wrap so they keep
+ * scaling down smoothly. (Hero copy keeps its own rules above.)
+ * ------------------------------------------------------------------ */
+.display-l-bold {
+  font-size: clamp(1.5rem, 1rem + 3.2vw, 3.75rem);
+  /* Tracked in, em-based so it holds at every size (base tracks it out). */
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.text-xxl-regular.centered.teal {
+  font-size: clamp(1.25rem, 0.85rem + 2.2vw, 2.75rem);
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+/* ------------------------------------------------------------------ *
+ * Section diagrams/graphs ("Capture Through Delivery" camera diagram and
+ * the "Fast Encoding & Decoding" graph carousel). Drop Webflow's fixed
+ * 4rem gutters + min-width:1440 height swap and let them scale fluidly:
+ * full width, capped, centered, with the standard fluid side gutter.
+ * ------------------------------------------------------------------ */
+
+/* Match the 896px media cap + fluid side buffer used by the sections above. */
+.section-creative_workflow .container-grouped.padding-global-sides,
+.section-fast-encoding-decoding .container-grouped.padding-global-sides {
+  width: 100%;
+  max-width: none;
+  padding-inline: var(--home-fluid-pad);
+  box-sizing: border-box;
+}
+
+/* Capture Through Delivery — camera workflow diagram */
+.section-creative_workflow .container-content-vflex.width-page-max.centered {
+  width: 100%;
+  max-width: 896px;
+  margin-inline: auto;
+  padding-inline: 0;
+  box-sizing: border-box;
+}
+
+.section-creative_workflow .wrapper-image {
+  width: 100%;
+}
+
+.section-creative_workflow .wrapper-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 896px;
+  margin-inline: auto;
+}
+
+/* Fast Encoding & Decoding — graph carousel */
+.section-fast-encoding-decoding .div-contain-carousel {
+  width: 100%;
+  max-width: 896px;
+  margin-inline: auto;
+  padding-inline: 0;
+  box-sizing: border-box;
+}
+
+/* The slide wrapper is a Webflow .w-container, capped at 940px but dropping to
+   728px at ≤991px — that step is what made the graph jump. Uncap it so the
+   carousel's own 896px cap governs and the image scales smoothly. */
+.section-fast-encoding-decoding .div-contain-slide_contents.w-container {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+.section-fast-encoding-decoding .image-slide-graph {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  aspect-ratio: auto;
+  object-fit: contain;
+  margin-inline: auto;
+}
+
+/* Lossless Compression — keep the four comparison boxes 4-up as long as they
+   fit, then drop to a tidy 2x2 grid. Tighten the column gap through the mid
+   range so the 82px SVGs aren't clipped before the switch. */
+@media (min-width: 601px) and (max-width: 991px) {
+  .section-lossless-compression .container-4col {
+    column-gap: clamp(0.75rem, 2.5vw, 2rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .section-lossless-compression .container-4col {
+    grid-template-columns: 1fr 1fr;
+    row-gap: clamp(1.5rem, 4vw, 2.5rem);
+  }
+}
+
+/* Neutralize Webflow's breakpoint-driven section padding so only the fluid
+   pad on .container-grouped.padding-global-sides applies — keeps centering
+   correct and scaling smooth across all viewport widths. */
+.section-jpeg-comparison,
+.section-avif-comparison,
+.section-visually-lossless,
+.section-lossless-transcoding,
+.section-wide-gamut-hdr,
+.section-progressive-decode {
+  padding-inline: 0;
+}
+
+.section-visually-lossless .container-grouped.padding-global-sides,
+.section-lossless-transcoding .container-grouped.padding-global-sides,
+.section-progressive-decode .container-grouped.padding-global-sides {
+  width: 100%;
+  max-width: none;
+  padding-inline: var(--home-fluid-pad);
+  box-sizing: border-box;
+}
+
+.section-visually-lossless .container-2col-span,
+.section-lossless-transcoding .container-2col-span {
+  width: 100%;
+  max-width: 896px;
+  margin-inline: auto;
+  padding-inline: 0;
+  overflow: visible;
+}
+
+/* The nested <section> for these widgets contains another .container-grouped
+   wrapper, which Webflow caps at max-width: 568px below 767. Remove that cap
+   so the comparison row can keep scaling fluidly down. */
+.section-visually-lossless .div-container-code .container-grouped,
+.section-lossless-transcoding .div-container-code .container-grouped {
+  max-width: none;
+  width: 100%;
+}
+
+/* Dots: top-right of the comparison row, just outside the right image. */
+.section-visually-lossless .dots-container,
+.section-lossless-transcoding .dots-container {
+  position: absolute;
+  top: 8px;
+  left: calc(100% + 6px);
+  right: auto;
+  transform: none;
+  max-height: none;
+  width: max-content;
+}
+
+/* Keep the JPEG / JPEG XL pills aligned to the image edges */
+.section-visually-lossless .container-2col-span-text,
+.section-lossless-transcoding .container-2col-span-text,
+.section-progressive-decode .container-2col-span-text,
+.section-jpeg-comparison .container-2col-span-text,
+.section-avif-comparison .container-2col-span-text {
+  width: 100%;
+  max-width: 896px;
+  margin-inline: auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 0;
+}
+
+.section-visually-lossless .container-2col-span-text > *,
+.section-lossless-transcoding .container-2col-span-text > *,
+.section-progressive-decode .container-2col-span-text > *,
+.section-jpeg-comparison .container-2col-span-text > *,
+.section-avif-comparison .container-2col-span-text > * {
+  display: flex;
+}
+
+.section-visually-lossless .container-2col-span-text > *:last-child,
+.section-lossless-transcoding .container-2col-span-text > *:last-child,
+.section-progressive-decode .container-2col-span-text > *:last-child,
+.section-jpeg-comparison .container-2col-span-text > *:last-child,
+.section-avif-comparison .container-2col-span-text > *:last-child {
+  justify-content: flex-end;
+}
+
+.section-visually-lossless .container-image-2col,
+.section-lossless-transcoding .container-image-2col {
+  aspect-ratio: 448 / 540;
+  width: 100%;
+}
+
+.section-wide-gamut-hdr .div-container-code {
+  align-items: center;
+}
+
+.section-wide-gamut-hdr .container-grouped.padding-global-sides {
+  width: 100%;
+  max-width: none;
+  padding-inline: var(--home-fluid-pad);
+  box-sizing: border-box;
+}
+
+.section-wide-gamut-hdr .w-embed {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.section-wide-gamut-hdr picture {
+  display: block;
+  width: 100%;
+  max-width: 896px;
+  margin-inline: auto;
+}
+
+.section-wide-gamut-hdr img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+#myVideo {
+  display: block;
+  width: 100%;
+  max-width: 896px;
+  height: auto;
+  margin-inline: auto;
+}
+
+/* Let the progressive section go wider so the video can breathe */
+.section-progressive-decode .container-grouped.padding-global-sides {
+  width: 100%;
+  max-width: none;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ffffff32;
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+.dot.active {
+  background-color: var(--accent--lime--P3--600);
+}
+
+/* slider comparison */
+.section-container {
+  display: flex;
+  flex-direction: column;
+  place-content: center;
+  grid-row-gap: 24px;
+}
+
+/* Before & After Slider Container Elements Start */
+/* A universal margin/padding reset used to sit here, but its selector list
+   contained the invalid `*::after *::before`, which makes browsers drop the
+   whole rule — it never applied in production, so it was removed rather than
+   "fixed" (fixing the comma would change layout site-wide). */
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+main {
+  display: block;
+  min-height: 0;
+}
+
+.image-controls-container {
+  display: flex;
+  margin-bottom: 2rem;
+}
+
+.comparison-container,
+.comparison-container-avif {
+  display: grid;
+  place-content: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  --position: 50%;
+  --comparison-zoom: 1;
+  --comparison-pan-x: 0px;
+  --comparison-pan-y: 0px;
+}
+
+.comparison-container .image-container-1,
+.comparison-container-avif .image-container-1 {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.image-container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: stretch;
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: clamp(0.75rem, 2.5vw, 1.5rem);
+  max-height: 90vh;
+  gap: clamp(0.75rem, 2.5vw, 1.5rem);
+}
+
+.slider-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left;
+  transform: translate(var(--comparison-pan-x), var(--comparison-pan-y))
+    scale(var(--comparison-zoom));
+  transform-origin: center;
+  transition: transform 120ms ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.image1-before {
+  position: absolute;
+  display: block;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.comparison-layer-before {
+  clip-path: inset(0 calc(100% - var(--position)) 0 0);
+  overflow: hidden;
+  z-index: 2;
+}
+
+.image1-before .slider-image {
+  max-width: none;
+}
+
+.image1-after {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.image1-after img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: left;
+  transform: translate(var(--comparison-pan-x), var(--comparison-pan-y))
+    scale(var(--comparison-zoom));
+  transform-origin: center;
+  transition: transform 120ms ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.image-slider,
+.image-slider-avif {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  opacity: 0;
+  /* for Firefox */
+  width: 100%;
+  height: 100%;
+}
+
+.comparison-container.is-zoomed,
+.comparison-container-avif.is-zoomed {
+  cursor: grab;
+}
+
+.comparison-container.is-zoomed .image-slider,
+.comparison-container-avif.is-zoomed .image-slider-avif {
+  cursor: grab;
+}
+
+.comparison-container.is-panning,
+.comparison-container-avif.is-panning {
+  cursor: grabbing;
+}
+
+.comparison-container.is-panning .image-slider,
+.comparison-container-avif.is-panning .image-slider-avif {
+  cursor: grabbing;
+}
+
+.comparison-container.is-panning .slider-image,
+.comparison-container-avif.is-panning .slider-image,
+.comparison-container.is-panning .image1-after img,
+.comparison-container-avif.is-panning .image1-after img {
+  transition: none;
+}
+
+.comparison-zoom-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: center;
+  font-family: var(--font--font-family--barlow);
+  font-weight: 600;
+  font-size: 12px;
+  color: #fff;
+  line-height: 1;
+}
+
+.comparison-zoom-control label {
+  margin-bottom: 0.125rem;
+}
+
+.comparison-zoom-slider {
+  appearance: none;
+  width: 8px;
+  height: 72px;
+  background-color: #1f1f1f;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  vertical-align: middle;
+  margin-block: 0.125rem;
+}
+
+.comparison-zoom-value {
+  min-width: 28px;
+  text-align: center;
+  margin-top: 0.125rem;
+}
+
+.comparison-zoom-slider::-webkit-slider-runnable-track {
+  appearance: none;
+  align-self: center;
+  width: 100%;
+  height: 8px;
+  background: #464646;
+  border-radius: 50px;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 4px;
+  margin-right: 4px;
+  cursor: pointer;
+}
+
+.comparison-zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 24px;
+  width: 24px;
+  background-color: #22e6e1;
+  border: 1px solid #22e6e1;
+  border-radius: 100%;
+  /* Center on the vertical track, nudged down a few px to sit on the groove. */
+  transform: translate(calc(-50% + 4px), 4px);
+  box-shadow: inset rgba(0, 0, 0, 0.6) 0px 0px 2px 2px;
+}
+
+.image-slider:focus-visible ~ .slider-button,
+.image-slider-avif:focus-visible ~ .slider-button {
+  outline: 2px solid black;
+  outline-offset: 1px;
+}
+
+.slider-line {
+  position: absolute;
+  inset: 0;
+  width: 3px;
+  height: 100%;
+  background-color: #fff;
+  z-index: 5;
+  left: var(--position);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.slider-button {
+  position: absolute;
+  background-color: #ffffffa0;
+  color: rgb(1, 1, 12);
+  width: 44px;
+  height: 44px;
+  border-radius: 100vw;
+  display: grid;
+  place-items: center;
+  top: 50%;
+  left: var(--position);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
+  box-shadow: 1px, 1px, 1px, hsl(0, 50%, 2%, 0.5);
+}
+
+.image-container-active {
+  max-width: 896px;
+  max-height: 90vh;
+}
+
+/* Tooltip */
+.side-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  max-height: 100%;
+  padding-left: 8px;
+  justify-self: end;
+  flex-shrink: 0;
+}
+
+#image_Title,
+#image_Title_AVIF {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.tooltip {
+  position: relative;
+  display: flex;
+  justify-items: flex-end;
+  align-items: center;
+}
+
+.comparison-info-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.comparison-info-trigger:focus-visible {
+  outline: 2px solid var(--brand--teal-bright--P3--600);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+.tooltip-triangle {
+  width: 0;
+  height: 0;
+  border-top: 25px solid transparent;
+  border-bottom: 25px solid transparent;
+  border-left: 25px solid black;
+  position: absolute;
+  left: 100%;
+  top: 46%;
+  transform: translateX(-50%);
+}
+
+.tooltip-content {
+  /* Desktop panel width; mobile uses exactly half of this (stacked columns). */
+  --cmp-info-w: 32rem;
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 14px;
+  background-color: black;
+  color: white;
+  box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.08);
+  padding: 1rem;
+  top: 0px;
+  left: 100%;
+  transform: translate(-110%, -50%);
+  width: var(--cmp-info-w);
+  max-width: calc(100vw - 2rem);
+  visibility: hidden;
+  opacity: 0;
+  z-index: 100;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+/* Desktop only: original hover behavior — panel appears beside the (i) icon.
+   Below 992px the controls drop under the image and the panel is shown as a
+   portaled overlay on tap instead, so the in-place hover must be disabled. */
+@media (hover: hover) and (pointer: fine) and (min-width: 992px) {
+  .tooltip:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* Click/tap toggle (works on all devices, primary path on touch). */
+.tooltip.is-open .tooltip-content {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Tooltip internal layout + mini sliders */
+.triangle-left {
+  margin: 0;
+  padding: 0;
+}
+
+.triangle-right {
+  margin: 0;
+  padding: 0;
+}
+
+.scale {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.scale-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 0.5rem 0 0.5rem 0;
+}
+
+.scale-label {
+  width: 18px;
+  height: 12px;
+  vertical-align: text-bottom;
+  text-align: center;
+}
+
+.scale-label-active {
+  font-family: barlow, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 6%;
+  line-height: 0.8em;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0;
+}
+
+.ssim-label-slider {
+  margin-top: 1rem;
+}
+
+.tooltip-slider {
+  display: flex;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #808080;
+  margin: -2px;
+  padding: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #808080;
+  align-content: center;
+  position: relative;
+  pointer-events: none;
+}
+
+.tooltip-slider-reverse {
+  display: flex;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #808080;
+  margin: -2px;
+  padding: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #808080;
+  align-content: center;
+  position: relative;
+  pointer-events: none;
+  transform: rotate(180deg);
+}
+
+/* iOS renders a default track/thumb box behind the custom triangle thumbs;
+   force the native track transparent so only the orange triangle shows. */
+.tooltip-slider::-webkit-slider-runnable-track,
+.tooltip-slider-reverse::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+}
+
+.tooltip-slider::-moz-range-track,
+.tooltip-slider-reverse::-moz-range-track {
+  background: transparent;
+  border: none;
+}
+
+.tooltip-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0;
+  height: 0;
+  /* iOS draws a white box behind the thumb unless its own box is cleared. */
+  background: transparent;
+  box-shadow: none;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 12px solid var(--accent--orange--P3--500);
+  border-bottom: 0;
+  cursor: pointer;
+}
+
+.tooltip-slider-reverse::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+  box-shadow: none;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 12px solid var(--accent--orange--P3--500);
+  border-bottom: 0;
+  cursor: pointer;
+}
+
+.tooltip-columns {
+  display: flex;
+  flex-direction: row;
+}
+
+.JPEG-tooltip-content,
+.AVIF-tooltip-content {
+  margin-right: 26px;
+}
+
+.JPEG-tooltip-content,
+.JXL-tooltip-content {
+  flex: 1;
+}
+
+/* Tabs */
+.tabs__sidebar,
+.tabs__sidebar_AVIF {
+  width: clamp(15.5rem, 70vw, 327px);
+  height: 36px;
+  box-shadow:
+    0px -0.5px 1px rgba(255, 255, 255, 0.866) inset,
+    0px -0.5px 1px rgba(255, 255, 255, 0.25) inset,
+    1px 1.5px 4px rgba(0, 0, 0, 0.355) inset,
+    1px 1.5px 4px rgba(0, 0, 0, 0.394) inset;
+  border-radius: var(--br-81xl);
+  background:
+    linear-gradient(rgba(208, 208, 208, 0.15), rgba(208, 208, 208, 0.15)), rgba(0, 0, 0, 0.8);
+  border: 0.5px solid var(--color-gray-400);
+  border-radius: 100px;
+  box-sizing: border-box;
+  overflow: visible;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding: var(--padding-9xs);
+  gap: var(--gap-9xs);
+  position: absolute;
+  z-index: 5;
+}
+
+.tabs__button,
+.tabs__button_avif,
+.next_button {
+  width: 100%;
+  position: relative;
+  border-radius: 50px;
+  font-size: 12px;
+  font-family: barlow;
+  font-weight: 500;
+  -webkit-text-fill-color: #ffffff92;
+  line-height: 120%;
+  letter-spacing: 0.025rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.6rem;
+  margin-left: 0.4rem;
+  margin-right: 0.4rem;
+  cursor: pointer;
+  background-color: #ffffff00;
+  border: none;
+}
+
+.tabs__button:active,
+.tabs__button_avif:active {
+  background-color: color-mix(in srgb, #5e5e5e 80%, #fff 15%);
+}
+
+.tabs__button-active,
+.tabs__button_avif-active {
+  background-color: #ffffff32;
+  font-weight: 600;
+  -webkit-text-fill-color: #fff;
+  border-style: solid;
+  border-width: 0.5px;
+  border-color: #cccccc5e;
+}
+
+.tabs__button::before,
+.tabs__button_avif::before {
+  content: attr(data-tooltip);
+  padding: 8px 16px 8px 16px;
+  border-radius: 8px;
+  background-color: var(--dark--gray);
+  -webkit-text-fill-color: var(--white);
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 20;
+  transition: opacity 0.15s ease;
+}
+
+.tabs__button:hover::before,
+.tabs__button_avif:hover::before {
+  opacity: 1;
+}
+
+.tabs__button::before,
+.tabs__button::after,
+.tabs__button_avif::before,
+.tabs__button_avif::after {
+  position: absolute;
+  top: 0.25rem;
+  left: 50%;
+  transform: translateX(-50%) translatey(-150%);
+}
+
+.tabs,
+.tabsAVIF {
+  display: flex;
+  width: min(896px, 100%);
+  max-width: 896px;
+  margin-inline: auto;
+  padding-inline: clamp(0.75rem, 2.5vw, 1.5rem);
+  justify-content: center;
+}
+
+.jpeg-jxl-tabs,
+.avif-jxl-tabs {
+  margin-top: 1.4rem;
+}
+
+/* Clip the side-controls / dots when the viewport gets narrow enough that
+   they would otherwise overflow off the right edge — keeps the image canvas
+   from shifting around as the viewport shrinks.
+   Restricted to direct children of main so it doesn't apply to the nested
+   <section class="section-visually-lossless"> inside .w-embed (which would
+   clip the dots that sit just outside .container-2col-span). */
+main > .section-jpeg-comparison,
+main > .section-avif-comparison,
+main > .section-visually-lossless,
+main > .section-lossless-transcoding {
+  overflow-x: clip;
+}
+
+.tabs__content,
+.tabs__content_avif {
+  display: none;
+}
+
+.tabs__content-active,
+.tabs__content_avif-active {
+  display: flex;
+  width: min(896px, 100%);
+  justify-content: space-between;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: clamp(0.75rem, 2.5vw, 1.25rem);
+  height: fit-content;
+}
+
+.label-left {
+  height: fit-content;
+  flex: 1 1 12rem;
+  width: auto;
+}
+
+.label-right {
+  flex: 1 1 12rem;
+  width: auto;
+  text-align: end;
+}
+
+.label-icon-left {
+  display: flex;
+  flex-direction: horizontal;
+  height: fit-content;
+  grid-column-gap: 8px;
+  align-items: baseline;
+  justify-content: flex-start;
+}
+
+.label-icon-right {
+  display: flex;
+  flex-direction: horizontal;
+  height: fit-content;
+  grid-column-gap: 8px;
+  align-items: baseline;
+  justify-content: flex-end;
+}
+
+/* range slider */
+.slide-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: clamp(15.5rem, 70vw, 327px);
+  height: 125px;
+}
+
+.slider {
+  display: flex;
+  appearance: none;
+  vertical-align: top;
+  width: 100%;
+  height: 20px;
+  background: #464646;
+  background: linear-gradient(to bottom right, transparent 50%, #464646 50%);
+  margin-top: 4rem;
+  border-radius: 2px;
+  align-content: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 28px;
+  width: 10px;
+  margin-bottom: 4px;
+  background-color: #22e6e1;
+  border: 1px solid #22e6e1;
+  box-shadow: inset rgba(0, 0, 0, 0.6) 0px 0px 2px 2px;
+  border-radius: 6px 6px 2px 2px;
+}
+
+.slider-size {
+  display: flex;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: #464646;
+  margin-top: 4rem;
+  border-radius: 10px;
+  align-content: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.slider-size::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 24px;
+  width: 24px;
+  background-color: var(--brand--teal-bright--P3--600);
+  border: 1px solid var(--brand--teal-dark--P3--600);
+  border-radius: 100%;
+  box-shadow: inset rgba(0, 0, 0, 0.6) 0px 0px 2px 2px;
+}
+
+.size-range-labels {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  margin-top: 12px;
+  width: 100%;
+  font-family: barlow;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  -webkit-text-fill-color: #fff;
+}
+
+.range-labels {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  margin-top: 12px;
+  width: 100%;
+  font-family: var(--font--font-family--barlow);
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  -webkit-text-fill-color: white;
+}
+
+.size-label {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.quality-label {
+  text-align: center;
+}
+
+/* slider label positioning */
+.ml {
+  transform: translateX(-25%);
+}
+.s-md {
+  transform: translateX(-25%);
+}
+.mh {
+  transform: translateX(-15%);
+}
+.h {
+  transform: translateX(20%);
+}
+.sm {
+  transform: translateX(-35%);
+}
+.q-md {
+  transform: translateX(-5%);
+}
+.lg {
+  transform: translateX(30%);
+}
+.xl {
+  transform: translateX(40%);
+}
+
+/* Information (i) + score text styles */
+.heading-desktop-h6 {
+  font-family: var(--font--font-family--barlow);
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: 0;
+  word-spacing: 0.1em;
+  line-height: 1.45em;
+  color: #fff;
+  margin: 0;
+}
+
+.text-m-regular {
+  font-family: var(--font--font-family--barlow);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0;
+  line-height: 1.45rem;
+  /* `color: var(var(--brand--teal-bright--P3--600))` was here, but nested
+     var() is invalid — browsers always dropped it, so it stays removed to
+     preserve the rendered (inherited) color. */
+  margin: 0;
+}
+
+.text-s-medium {
+  font-family: var(--font--font-family--barlow);
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.015em;
+  word-spacing: 0.1em;
+  line-height: 1.4rem;
+  color: #afafaf;
+  margin: 0;
+}
+
+.text-s-medium-white {
+  color: #fff;
+  font-weight: 500;
+}
+
+.text-medium {
+  font-family: var(--font--font-family--barlow);
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: -0.0075rem;
+  line-height: 1.45em;
+  text-transform: uppercase;
+  color: white;
+  margin: 0;
+}
+
+.text-xs-semibold {
+  font-family: var(--font--font-family--barlow);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: -0.03em;
+  line-height: 0.8em;
+  text-transform: uppercase;
+  color: #ffffffa7;
+  margin: 0;
+}
+
+/* (Truncated) Remaining legacy rules still live in root index.html for now. */
+
+/* ----------------------------------------------------------------
+   Fluid layout for the JPEG/JXL and AVIF/JXL comparison widgets.
+   No breakpoints — the section, image, tabs, pill, and range slider
+   all scale from a 896px max down to viewport - fluid pad.
+   DOM is preserved; the zoom feature (--comparison-zoom + the
+   .side-controls rail) is unaffected.
+   ---------------------------------------------------------------- */
+
+/* Outer section: matches the fluid pad pattern used by the other home sections.
+   The outer wrapper also carries .w-layout-blockcontainer / .w-container, both
+   of which impose 940px (728px at ≤991) caps and auto margins — neutralize them
+   here. Same for the inner .container-grouped (1024px cap) and the .container-code
+   wrapper around the image (960px cap), so the image and tabs share identical
+   parent geometry and center together. */
+.section-jpeg-comparison .container-grouped.padding-global-sides,
+.section-avif-comparison .container-grouped.padding-global-sides {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: var(--home-fluid-pad);
+  box-sizing: border-box;
+}
+
+.section-jpeg-comparison .container-grouped.padding-global-sides > .container-grouped,
+.section-avif-comparison .container-grouped.padding-global-sides > .container-grouped {
+  width: 100%;
+  max-width: none;
+  padding-inline: 0;
+}
+
+.section-jpeg-comparison .container-code,
+.section-avif-comparison .container-code {
+  width: 100%;
+  max-width: none;
+  position: relative;
+  /* Lift the image + its (i) panel above the tabs that follow in the DOM so the
+     panel overlays everything, matching the original site. */
+  z-index: 30;
+}
+
+/* Comparison image area: image + side-controls sit beside each other at large
+   sizes; controls stay off the image. Below 991px the stack controls in a row
+   under the image. Tabs stay 896px-wide and align with the image only. */
+.section-jpeg-comparison .image-container,
+.section-avif-comparison .image-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline-start: calc((100% - min(896px, 100%)) / 2);
+  margin-inline-end: auto;
+  padding-inline: 0;
+  isolation: isolate;
+}
+
+.section-jpeg-comparison .comparison-container,
+.section-avif-comparison .comparison-container,
+.section-jpeg-comparison .comparison-container-avif,
+.section-avif-comparison .comparison-container-avif {
+  flex: 0 1 896px;
+  width: min(896px, calc(100vw - (2 * var(--home-fluid-pad)) - 2.75rem));
+  min-width: 0;
+  max-width: 896px;
+  aspect-ratio: 2 / 1;
+  z-index: 1;
+}
+
+.section-jpeg-comparison .side-controls,
+.section-avif-comparison .side-controls {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+  width: max-content;
+  min-width: 2rem;
+  padding-block: 0.75rem;
+  padding-inline: 0;
+  height: auto;
+  box-sizing: border-box;
+  z-index: 20;
+}
+
+.section-jpeg-comparison .side-controls .dots,
+.section-avif-comparison .side-controls .dots {
+  margin-left: 0;
+  padding-top: 0.125rem;
+}
+
+.section-jpeg-comparison .side-controls .tooltip,
+.section-avif-comparison .side-controls .tooltip {
+  padding-bottom: 0.125rem;
+}
+
+.section-jpeg-comparison .side-controls .tooltip-triangle,
+.section-avif-comparison .side-controls .tooltip-triangle {
+  display: none;
+}
+
+/* Tabs: same fluid 896-wide box as the image above, identically centered.
+     row 1 = [ label-left | COMPARE SIZE/QUALITY pill | label-right ] — top-aligned
+     row 2 = range slider, centered
+   .tabs__content-active is display:contents so its three children
+   participate in this grid directly. */
+.jpeg-jxl-tabs,
+.avif-jxl-tabs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  width: min(896px, 100%);
+  max-width: 896px;
+  margin-inline: auto;
+  padding-inline: 0;
+  row-gap: 0.5rem;
+  column-gap: 1rem;
+  align-items: start;
+  box-sizing: border-box;
+}
+
+.jpeg-jxl-tabs .tabs__content-active,
+.avif-jxl-tabs .tabs__content_avif-active {
+  display: contents;
+}
+
+.jpeg-jxl-tabs .label-left,
+.avif-jxl-tabs .label-left {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  align-self: start;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+}
+
+.jpeg-jxl-tabs .tabs__sidebar,
+.avif-jxl-tabs .tabs__sidebar_AVIF {
+  position: static;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  align-self: start;
+  width: clamp(8.75rem, 38vw, 327px);
+  max-width: 100%;
+  min-width: 0;
+  height: clamp(30px, 8vw, 36px);
+  padding: 2px;
+  gap: 2px;
+}
+
+.jpeg-jxl-tabs .tabs__button,
+.jpeg-jxl-tabs .tabs__button_avif,
+.avif-jxl-tabs .tabs__button,
+.avif-jxl-tabs .tabs__button_avif {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: clamp(0.5625rem, 2.6vw, 0.75rem);
+  padding: 0.2rem clamp(0.2rem, 1.5vw, 0.6rem);
+  margin-inline: clamp(0.08rem, 0.4vw, 0.4rem);
+  letter-spacing: clamp(0.01rem, 0.04vw, 0.025rem);
+  white-space: normal;
+  text-align: center;
+  line-height: 1.05;
+}
+
+/* Size / SSIMU2 readouts — match the larger sizing used by the comparison in
+   the Visually Lossless section (base .text-all-caps-micro-medium /
+   .headline-l-semibold / .text-medium), rather than the shrunken values. */
+.jpeg-jxl-tabs .label-left .text-all-caps-micro-medium,
+.jpeg-jxl-tabs .label-right .text-all-caps-micro-medium,
+.avif-jxl-tabs .label-left .text-all-caps-micro-medium,
+.avif-jxl-tabs .label-right .text-all-caps-micro-medium {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  white-space: normal;
+  text-wrap: balance;
+  line-height: 1.2;
+}
+
+.jpeg-jxl-tabs .headline-l-semibold,
+.avif-jxl-tabs .headline-l-semibold {
+  font-size: clamp(1.625rem, calc(1.141rem + 2.066vw), 3rem);
+  line-height: 1.15;
+}
+
+.jpeg-jxl-tabs .text-medium,
+.avif-jxl-tabs .text-medium {
+  font-size: 1rem;
+}
+
+.jpeg-jxl-tabs .label-right,
+.avif-jxl-tabs .label-right {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  align-self: start;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+}
+
+.jpeg-jxl-tabs .slide-container,
+.avif-jxl-tabs .slide-container {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-self: center;
+  height: auto;
+  width: min(100%, 327px);
+  min-height: 5rem;
+}
+
+/* Drop the legacy 4rem top margin on the inner range inputs — that gap was
+   reserving space for the labels back when they lived inside .slide-container. */
+.jpeg-jxl-tabs .slide-container .slider,
+.jpeg-jxl-tabs .slide-container .slider-size,
+.avif-jxl-tabs .slide-container .slider,
+.avif-jxl-tabs .slide-container .slider-size {
+  margin-top: 0;
+}
+
+/* Below this width the controls rotate from a column beside the image into a
+   horizontal row beneath it. */
+@media (max-width: 991px) {
+  .section-jpeg-comparison .image-container,
+  .section-avif-comparison .image-container {
+    flex-direction: column;
+    align-items: center;
+    width: min(896px, 100%);
+    margin-inline: auto;
+    overflow: visible;
+  }
+
+  .section-jpeg-comparison .comparison-container,
+  .section-avif-comparison .comparison-container,
+  .section-jpeg-comparison .comparison-container-avif,
+  .section-avif-comparison .comparison-container-avif {
+    flex: none;
+    width: 100%;
+    max-width: 896px;
+  }
+
+  .section-jpeg-comparison .side-controls,
+  .section-avif-comparison .side-controls {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    align-self: auto;
+    width: 100%;
+    gap: 0.5rem;
+    padding-block: 0.75rem;
+    padding-inline: 0;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .section-jpeg-comparison .side-controls .dots,
+  .section-avif-comparison .side-controls .dots {
+    grid-column: 1;
+    justify-self: start;
+    flex-direction: row;
+    padding-top: 0;
+  }
+
+  .section-jpeg-comparison .side-controls .comparison-zoom-control,
+  .section-avif-comparison .side-controls .comparison-zoom-control {
+    grid-column: 2;
+    justify-self: center;
+    flex-direction: row;
+    font-size: 11px;
+    gap: 0.3rem;
+  }
+
+  .section-jpeg-comparison .side-controls .tooltip,
+  .section-avif-comparison .side-controls .tooltip {
+    grid-column: 3;
+    justify-self: end;
+    padding-bottom: 0;
+    position: relative;
+    z-index: 20;
+  }
+
+  .section-jpeg-comparison .side-controls .dots .dot,
+  .section-avif-comparison .side-controls .dots .dot {
+    margin: 0 5px;
+  }
+
+  .jpeg-jxl-tabs .tabs__button::before,
+  .jpeg-jxl-tabs .tabs__button_avif::before,
+  .avif-jxl-tabs .tabs__button::before,
+  .avif-jxl-tabs .tabs__button_avif::before {
+    top: auto;
+    bottom: 0.25rem;
+    transform: translateX(-50%) translateY(calc(100% + 0.5rem));
+  }
+
+  @media (hover: none) {
+    .jpeg-jxl-tabs .tabs__button::before,
+    .jpeg-jxl-tabs .tabs__button_avif::before,
+    .avif-jxl-tabs .tabs__button::before,
+    .avif-jxl-tabs .tabs__button_avif::before {
+      content: none;
+    }
+  }
+
+  .section-jpeg-comparison .comparison-zoom-control label,
+  .section-avif-comparison .comparison-zoom-control label {
+    margin-bottom: 0;
+  }
+
+  .section-jpeg-comparison .comparison-zoom-value,
+  .section-avif-comparison .comparison-zoom-value {
+    margin-top: 0;
+  }
+
+  .section-jpeg-comparison .comparison-zoom-slider,
+  .section-avif-comparison .comparison-zoom-slider {
+    writing-mode: horizontal-tb;
+    direction: ltr;
+    width: clamp(4rem, 18vw, 5.5rem);
+    height: 8px;
+    margin-block: 0;
+  }
+
+  .section-jpeg-comparison .comparison-zoom-slider::-webkit-slider-thumb,
+  .section-avif-comparison .comparison-zoom-slider::-webkit-slider-thumb {
+    /* Center the 24px thumb on the 8px horizontal track: (8 - 24) / 2 = -8px. */
+    transform: translateY(-8px);
+  }
+
+  .section-jpeg-comparison .side-controls .info-icon,
+  .section-avif-comparison .side-controls .info-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Info (i) panel — portaled to <body> on touch / narrow layouts.
+ * On desktop the panel stays anchored beside the (i) icon (see the
+ * .tooltip-content rules above). When the controls drop below the image
+ * (≤ 991px) JS moves the panel to the top of the document and we render
+ * it as a centered overlay so it is never trapped beneath a later
+ * section's stacking context. As an overlay it is the desktop panel
+ * "stacked" — a SINGLE column that only ever scrolls vertically.
+ * ------------------------------------------------------------------ */
+.comparison-info-portal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: min(85vh, 34rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  z-index: 2147483000;
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  padding: clamp(0.75rem, 3vw, 1rem);
+}
+
+/* Stack the two info blocks so the panel only needs vertical scrolling. */
+.comparison-info-portal .tooltip-columns {
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.comparison-info-portal .JPEG-tooltip-content,
+.comparison-info-portal .AVIF-tooltip-content,
+.comparison-info-portal .JXL-tooltip-content {
+  margin-right: 0;
+  min-width: 0;
+}
+
+/* Keep the score scales from forcing the panel wider than the viewport. */
+.comparison-info-portal .scale-labels {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.comparison-info-portal .scale-label {
+  width: auto;
+  min-width: 0;
+  font-size: clamp(0.5rem, 2.4vw, 0.75rem);
+}
+
+@media (max-width: 480px) {
+  .comparison-info-portal .heading-desktop-h6 {
+    font-size: clamp(0.8125rem, 3.5vw, 1rem);
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+
+  .comparison-info-portal .text-m-regular {
+    font-size: clamp(0.75rem, 3vw, 0.875rem);
+    line-height: 1.3;
+  }
+
+  .comparison-info-portal .text-s-medium,
+  .comparison-info-portal .text-s-medium-white {
+    font-size: clamp(0.6875rem, 2.8vw, 0.8125rem);
+    line-height: 1.35;
+  }
+
+  .comparison-info-portal .text-xs-semibold {
+    font-size: clamp(0.5625rem, 2.2vw, 0.6875rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .jpeg-jxl-tabs,
+  .avif-jxl-tabs {
+    column-gap: clamp(0.35rem, 2vw, 0.75rem);
+  }
+}
+
+@media (max-width: 479px) {
+  .jpeg-jxl-tabs,
+  .avif-jxl-tabs {
+    column-gap: clamp(0.2rem, 1.2vw, 0.5rem);
+  }
+
+  .jpeg-jxl-tabs .tabs__sidebar,
+  .avif-jxl-tabs .tabs__sidebar_AVIF {
+    width: clamp(7rem, 34vw, 327px);
+    height: auto;
+    min-height: clamp(28px, 7vw, 34px);
+  }
+
+  .jpeg-jxl-tabs .tabs__button,
+  .jpeg-jxl-tabs .tabs__button_avif,
+  .avif-jxl-tabs .tabs__button,
+  .avif-jxl-tabs .tabs__button_avif {
+    font-size: clamp(0.4375rem, 2vw, 0.6875rem);
+    padding: 0.12rem clamp(0.1rem, 1vw, 0.35rem);
+    letter-spacing: 0.01em;
+  }
+}

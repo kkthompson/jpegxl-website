@@ -1,0 +1,89 @@
+---
+// Global styles, bundled by Vite in cascade order (was: four <link> tags).
+// contact.html (legacy, served from public/) still uses the public/css copies.
+import '../styles/fonts.css';
+import '../styles/normalize.css';
+import '../styles/webflow.css';
+import '../styles/styles.css';
+import '../styles/navbar.css';
+import Nav from '../components/Nav.astro';
+import FooterCompact from '../components/FooterCompact.astro';
+import FooterFull from '../components/FooterFull.astro';
+
+type Props = {
+  title: string;
+  description?: string;
+  canonical?: string;
+  /** OG/Twitter image. Absolute URL, or site-relative path (resolved against `site`). */
+  ogImage?: string;
+  ogType?: string;
+  keywords?: string;
+  author?: string;
+  footerVariant?: 'compact' | 'full';
+};
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage = '/images/OG_Image-JPEG_XL-neon-tunnel-glow.webp',
+  ogType = 'website',
+  keywords,
+  author,
+  footerVariant = 'compact',
+} = Astro.props;
+
+// Resolve against the configured `site` so pages don't repeat the origin.
+// `canonical` falls back to the current page URL when not explicitly provided;
+// passing an already-absolute canonical leaves it unchanged.
+const canonicalUrl = new URL(canonical ?? Astro.url.pathname, Astro.site).href;
+const ogImageUrl = new URL(ogImage, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
+    <title>{title}</title>
+    {description ? <meta name="description" content={description} /> : null}
+    {keywords ? <meta name="keywords" content={keywords} /> : null}
+    {author ? <meta name="author" content={author} /> : null}
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    {description ? <meta property="og:description" content={description} /> : null}
+    <meta property="og:image" content={ogImageUrl} />
+
+    <!-- Twitter/X -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@JpegXl" />
+    <meta property="twitter:url" content={canonicalUrl} />
+    <meta property="twitter:title" content={title} />
+    {description ? <meta property="twitter:description" content={description} /> : null}
+    <meta property="twitter:image" content={ogImageUrl} />
+
+    <link rel="icon" href="/images/Icon-JPEGXL-Square-Full-Colour.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/images/webclip.png" />
+
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+
+    <slot name="head" />
+  </head>
+  <body class="body">
+    <a href="#main-content" class="skip-nav">Skip to main content</a>
+    <Nav />
+    <div class="page-wrapper">
+      <slot />
+      {footerVariant === 'full' ? <FooterFull /> : <FooterCompact />}
+    </div>
+    <script>
+      import '../scripts/site.js';
+    </script>
+  </body>
+</html>

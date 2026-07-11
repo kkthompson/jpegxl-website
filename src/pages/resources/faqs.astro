@@ -1,0 +1,481 @@
+---
+import { getCollection } from 'astro:content';
+import { Marked, Renderer, marked } from 'marked';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+
+const title = 'FAQs – JPEG XL';
+const description = 'Frequently asked questions about the JPEG XL image format.';
+const canonical = 'https://jpegxl.info/resources/faqs.html';
+
+const categories = (await getCollection('faq')).sort((a, b) => a.data.order - b.data.order);
+
+type MarkdownToken = ReturnType<typeof marked.lexer>[number];
+
+function escapeHtml(value: string) {
+  const characters: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+
+  return value.replace(/[&<>"']/g, (character) => characters[character]);
+}
+
+const faqRenderer = new Renderer();
+faqRenderer.code = ({ text, lang, escaped }) => {
+  const language = lang?.match(/\S+/)?.[0] ?? '';
+  const languageLabel = language ? language.toUpperCase() : 'CODE';
+  const languageClass = language ? ` class="language-${escapeHtml(language)}"` : '';
+  const code = escaped ? text : escapeHtml(text);
+
+  return `<figure class="faq-code-block" data-language="${escapeHtml(languageLabel)}"><figcaption><span>${escapeHtml(languageLabel)}</span><button type="button" class="faq-copy-button" data-copy-code aria-label="Copy ${escapeHtml(languageLabel)} code">Copy</button></figcaption><pre><code${languageClass}>${code}</code></pre></figure>`;
+};
+
+const faqMarked = new Marked({ renderer: faqRenderer });
+
+function trimAnswerTokens(tokens: MarkdownToken[]) {
+  let start = 0;
+  let end = tokens.length;
+
+  while (start < end && tokens[start].type === 'space') start += 1;
+  while (end > start && ['space', 'hr'].includes(tokens[end - 1].type)) end -= 1;
+
+  return tokens.slice(start, end);
+}
+
+function getFaqItems(markdown: string) {
+  const tokens = marked.lexer(markdown);
+  const items: { question: string; answerHtml: string; schemaHtml: string }[] = [];
+  let question: string | null = null;
+  let answerTokens: MarkdownToken[] = [];
+
+  function pushCurrentItem() {
+    if (!question) return;
+    const trimmedTokens = trimAnswerTokens(answerTokens);
+    const answerHtml = faqMarked.parser(trimmedTokens);
+    const schemaHtml = marked.parser(trimmedTokens);
+    if (answerHtml.trim()) items.push({ question, answerHtml, schemaHtml });
+  }
+
+  for (const token of tokens) {
+    if (token.type === 'heading' && token.depth === 3) {
+      pushCurrentItem();
+      question = token.text;
+      answerTokens = [];
+      continue;
+    }
+
+    if (question) answerTokens.push(token);
+  }
+
+  pushCurrentItem();
+  return items;
+}
+
+const rendered = categories.map((entry) => ({
+  entry,
+  items: getFaqItems(entry.body ?? ''),
+}));
+
+const updatedCategories = rendered.filter(({ entry }) => entry.data.lastUpdated);
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: rendered.flatMap(({ items }) =>
+    items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.schemaHtml,
+      },
+    })),
+  ),
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <style is:inline>
+      .wrapper {
+        text-align: center;
+        margin: 20px 0;
+      }
+      .tabs {
+        font-size: 16px;
+        padding: 0;
+        list-style: none;
+        background: #494b50;
+        border-radius: 50px;
+        box-shadow: 2px 2px 4px #18191b inset;
+        position: relative;
+        display: inline-flex;
+        width: auto;
+        justify-content: center;
+      }
+      .tabs button {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        font: inherit;
+        text-decoration: none;
+        color: #18191b;
+        padding: 10px 20px;
+        display: inline-block;
+        position: relative;
+        z-index: 1;
+        transition-duration: 0.6s;
+        cursor: pointer;
+      }
+      .tabs button.active {
+        color: #fff;
+      }
+      .tabs .selector {
+        height: 100%;
+        display: inline-block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 1;
+        border-radius: 50px;
+        border: 1px solid #18191b;
+        box-shadow: 0 0 16px #18191b;
+        transition-duration: 0.6s;
+        transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        background: linear-gradient(45deg, #1ae5e0 0%, #0f8a86 100%);
+      }
+      .tab-content {
+        padding: 20px;
+        background: #1e1e1e;
+        border-radius: 10px;
+        margin-top: 20px;
+        width: 100%;
+      }
+      .tab-content[hidden] {
+        display: none;
+      }
+      .faq-item {
+        margin: 0;
+      }
+      .faq-item + .faq-item {
+        border-top: 1px solid var(--line-divider);
+      }
+      .text-question-faq {
+        font-size: 1.2em;
+        font-weight: 500;
+        margin: 0;
+        padding: 1.25em 0 0.75em;
+        color: var(--white);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        list-style: none;
+      }
+      .text-question-faq::-webkit-details-marker {
+        display: none;
+      }
+      .text-answer-faq {
+        font-size: 1.125rem;
+        font-weight: 300;
+        margin-top: 0;
+        margin-bottom: 1.5em;
+        color: var(--text--color--text-white);
+        text-wrap: pretty;
+        padding-bottom: 1.5em;
+      }
+      .text-answer-faq li {
+        font-family: var(--font--font-family--barlow);
+        font-size: clamp(0.9375rem, calc(0.872rem + 0.282vw), 1.125rem);
+        font-weight: 300;
+        color: inherit;
+        letter-spacing: -0.01em;
+        line-height: 1.45em;
+      }
+      .text-answer-faq :not(pre) > code {
+        border: 1px solid color-mix(in srgb, var(--brand--teal-bright--P3--500) 22%, transparent);
+        border-radius: 0.35rem;
+        background: color-mix(in srgb, var(--brand--teal-bright--P3--500) 10%, transparent);
+        color: var(--text--color--text-white);
+        font-family: var(--font--font-family--monospace);
+        font-size: 0.88em;
+        font-weight: 500;
+        padding: 0.08em 0.32em;
+        white-space: nowrap;
+      }
+      .faq-code-block {
+        overflow: hidden;
+        margin: 1rem 0 1.25rem;
+        border: 1px solid color-mix(in srgb, var(--brand--teal-bright--P3--500) 22%, var(--line-divider));
+        border-radius: 8px;
+        background:
+          linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--brand--teal-bright--P3--500) 12%, #24262a) 0%,
+            #18191b 56%
+          );
+        box-shadow: inset 0 1px 0 color-mix(in srgb, var(--white) 8%, transparent);
+        text-align: left;
+      }
+      .faq-code-block figcaption {
+        border-bottom: 1px solid color-mix(in srgb, var(--white) 9%, transparent);
+        color: color-mix(in srgb, var(--brand--teal-bright--P3--500) 80%, var(--white));
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        font-family: var(--font--font-family--monospace);
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        line-height: 1;
+        padding: 0.7rem 1rem 0.62rem;
+      }
+      .faq-copy-button {
+        appearance: none;
+        border: 1px solid color-mix(in srgb, var(--brand--teal-bright--P3--500) 35%, transparent);
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--white) 7%, transparent);
+        color: var(--text--color--text-white);
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.6875rem;
+        letter-spacing: 0.08em;
+        line-height: 1;
+        padding: 0.4rem 0.65rem;
+        transition:
+          background-color 0.2s ease,
+          border-color 0.2s ease,
+          color 0.2s ease,
+          transform 0.2s ease;
+      }
+      .faq-copy-button:hover,
+      .faq-copy-button:focus-visible {
+        border-color: color-mix(in srgb, var(--brand--teal-bright--P3--500) 72%, transparent);
+        background: color-mix(in srgb, var(--brand--teal-bright--P3--500) 18%, transparent);
+        color: var(--white);
+      }
+      .faq-copy-button:focus-visible {
+        outline: 2px solid var(--brand--teal-bright--P3--500);
+        outline-offset: 2px;
+      }
+      .faq-copy-button:active {
+        transform: translateY(1px);
+      }
+      .faq-copy-button.is-copied {
+        border-color: color-mix(in srgb, var(--brand--teal-bright--P3--500) 85%, transparent);
+        background: color-mix(in srgb, var(--brand--teal-bright--P3--500) 24%, transparent);
+        color: var(--white);
+      }
+      .faq-code-block pre {
+        overflow-x: auto;
+        margin: 0;
+        padding: 1rem;
+        -webkit-overflow-scrolling: touch;
+      }
+      .faq-code-block code {
+        display: block;
+        color: var(--text--color--text-white);
+        font-family: var(--font--font-family--monospace);
+        font-size: clamp(0.8125rem, calc(0.77rem + 0.18vw), 0.9375rem);
+        font-weight: 400;
+        line-height: 1.65;
+        tab-size: 2;
+        white-space: pre;
+      }
+      .text-answer-faq :first-child {
+        margin-top: 0;
+      }
+      .text-answer-faq :last-child {
+        margin-bottom: 0;
+      }
+      .disclosure-icon {
+        width: 20px;
+        height: 20px;
+        background-color: var(--brand--blue--P3--500);
+        border-radius: 50%;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        transition:
+          transform 0.3s ease,
+          background-color 0.3s ease;
+      }
+      .disclosure-icon::before,
+      .disclosure-icon::after {
+        content: '';
+        position: absolute;
+        background-color: var(--white);
+        transition: transform 0.3s ease;
+      }
+      .disclosure-icon::before {
+        width: 2px;
+        height: 10px;
+      }
+      .disclosure-icon::after {
+        width: 10px;
+        height: 2px;
+      }
+      .faq-item[open] .disclosure-icon {
+        transform: rotate(180deg);
+        background-color: var(--brand--teal-bright--P3--500);
+      }
+      .faq-item[open] .disclosure-icon::before {
+        transform: rotate(90deg);
+      }
+      .code-faqs hr {
+        border: 0;
+        height: 1px;
+        background: var(--line-divider);
+        margin: 20px 0;
+      }
+      .faq-updated-footer {
+        margin: 1rem 0 0;
+        color: color-mix(in srgb, var(--text--color--text-white) 70%, transparent);
+        font-size: 0.875rem;
+        font-weight: 300;
+        line-height: 1.4;
+        text-align: center;
+      }
+      .faq-updated-footer span + span::before {
+        content: ' · ';
+      }
+    </style>
+  </Fragment>
+
+  <PageHero
+    title="FAQs"
+    subtitle="This FAQ aims to answer some commonly asked questions about JPEG XL and associated technologies."
+  />
+  <div class="section-content-wrapper height-100 centered padding-top_bottom">
+    <main class="container-content-vflex width-page-max centered">
+      <div class="container-content-vflex">
+        <div class="wrapper-content centered">
+          <div class="code-faqs w-embed">
+            <div class="wrapper">
+              <div class="tabs" role="tablist" aria-label="FAQ categories">
+                <div class="selector"></div>
+                {
+                  rendered.map(({ entry }, i) => (
+                    <button
+                      type="button"
+                      id={`${entry.id}-tab`}
+                      class={i === 0 ? 'active' : ''}
+                      role="tab"
+                      aria-selected={i === 0 ? 'true' : 'false'}
+                      aria-controls={`${entry.id}-panel`}
+                      data-tab={entry.id}
+                    >
+                      {entry.data.title}
+                    </button>
+                  ))
+                }
+              </div>
+            </div>
+            {
+              rendered.map(({ entry, items }, i) => (
+                <div
+                  id={`${entry.id}-panel`}
+                  class="tab-content"
+                  role="tabpanel"
+                  aria-labelledby={`${entry.id}-tab`}
+                  hidden={i !== 0}
+                >
+                  {items.map((item) => (
+                    <details class="faq-item">
+                      <summary class="text-question-faq">
+                        <span>{item.question}</span>
+                        <span class="disclosure-icon" aria-hidden="true"></span>
+                      </summary>
+                      <div class="text-answer-faq" set:html={item.answerHtml} />
+                    </details>
+                  ))}
+                </div>
+              ))
+            }
+            {
+              updatedCategories.length > 0 && (
+                <footer class="faq-updated-footer" aria-label="FAQ update dates">
+                  <span>Last updated:</span>
+                  {updatedCategories.map(({ entry }) => (
+                    <span>
+                      {entry.data.title}: {entry.data.lastUpdated}
+                    </span>
+                  ))}
+                </footer>
+              )
+            }
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const tabsContainer = document.querySelector('.tabs')!;
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.tabs button');
+    const selector = document.querySelector<HTMLElement>('.selector')!;
+    const tabContents = document.querySelectorAll<HTMLElement>('.tab-content');
+    const copyButtons = document.querySelectorAll<HTMLButtonElement>('[data-copy-code]');
+
+    function setSelector(elem: HTMLElement) {
+      selector.style.width = elem.offsetWidth + 'px';
+      selector.style.left = elem.offsetLeft + 'px';
+    }
+
+    tabsContainer.addEventListener('click', (evt) => {
+      const tab = (evt.target as HTMLElement).closest<HTMLButtonElement>('[role="tab"]');
+      if (!tab) return;
+      const tabName = tab.getAttribute('data-tab')!;
+      tabs.forEach((t) => t.classList.remove('active'));
+      tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+      tabContents.forEach((content) => {
+        content.hidden = content.id !== `${tabName}-panel`;
+      });
+      tab.classList.add('active');
+      setSelector(tab);
+    });
+
+    async function copyText(text: string) {
+      await navigator.clipboard.writeText(text);
+    }
+
+    copyButtons.forEach((button) => {
+      button.addEventListener('click', async () => {
+        const code = button.closest('.faq-code-block')?.querySelector('code')?.textContent;
+        if (!code) return;
+
+        const defaultLabel = button.dataset.defaultLabel ?? button.textContent ?? 'Copy';
+        button.dataset.defaultLabel = defaultLabel;
+
+        try {
+          await copyText(code);
+          button.textContent = 'Copied';
+          button.classList.add('is-copied');
+          window.setTimeout(() => {
+            button.textContent = defaultLabel;
+            button.classList.remove('is-copied');
+          }, 1800);
+        } catch {
+          button.textContent = 'Failed';
+          window.setTimeout(() => {
+            button.textContent = defaultLabel;
+          }, 1800);
+        }
+      });
+    });
+
+    // Set initial position of selector
+    setSelector(document.querySelector<HTMLElement>('.tabs button.active')!);
+  </script>
+</BaseLayout>
