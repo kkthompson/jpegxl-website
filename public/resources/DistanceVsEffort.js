@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageDropdown = document.getElementById('image-dropdown');
     const imageElement = document.getElementById('image');
     const imageViewport = document.getElementById('image-viewport');
-    const fallbackNotice = document.getElementById('jxl-fallback-notice');
     const slider = document.getElementById('slider');
     const effortSlider = document.getElementById('effort-slider');
     const zoomSlider = document.getElementById('zoom-slider');
@@ -168,7 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
       slider.max = distances.length - 1;
       sliderLabels.innerHTML = '';
       distances.forEach((distance, index) => {
-        if (index % Math.ceil(distances.length / 10) === 0) {
+        const isSampledTick = index % Math.ceil(distances.length / 10) === 0;
+        const isFinalTick = index === distances.length - 1;
+        if (isSampledTick || isFinalTick) {
           const label = document.createElement('span');
           label.textContent = distance.toFixed(1);
           sliderLabels.appendChild(label);
@@ -186,12 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ? variants.find(([quality]) => quality === 0) ?? variants[imageIndex]
         : variants[imageIndex];
       const [quality, fileName, size, encodingSpeed, bpp, ssim] = imageData;
-      fallbackNotice.hidden = true;
-      imageElement.onerror = () => {
-        imageElement.onerror = null;
-        fallbackNotice.hidden = false;
-        imageElement.src = getFallbackImagePath();
-      };
       imageElement.src = `${imageDirectory}/${fileName}`;
       const previewLabel = isLosslessPreview ? 'Lossless preview. ' : '';
       imageElement.alt = `${previewLabel}Name: ${currentImage.name} Distance: ${quality} Effort: ${effort}`;
@@ -200,9 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ssimSpan.textContent = Number(ssim).toFixed(2); // Limit SSIMU2 to 2 decimals
       const compressionTime = (currentImage.pixels / 1000000) / encodingSpeed;
       compressionTimeSpan.textContent = compressionTime.toFixed(3); // Limit to 3 decimals
-    }
-    function getFallbackImagePath() {
-      return `${imageDirectory}/webp_fallback/${currentImage.source}.d0.3.webp`;
     }
     function handleZoomChange() {
       const nextZoom = parseFloat(zoomSlider.value);
