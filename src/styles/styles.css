@@ -6307,8 +6307,8 @@ blockquote {
 
   .container-wave-animated {
     width: 100%;
-    min-width: 568px;
-    height: 7rem;
+    min-width: 0;
+    height: clamp(4rem, 19.7vw, 7rem);
   }
   
   .code-scale_box-animated {
@@ -6911,7 +6911,7 @@ blockquote {
   .container-wave-animated {
     width: 100%;
     min-width: auto;
-    height: 4rem;
+    height: clamp(4rem, 19.7vw, 7rem);
   }
 
   .group-container {
@@ -7174,5 +7174,3 @@ blockquote {
     grid-area: span 1 / span 2 / span 1 / span 2;
   }
 }
-
-

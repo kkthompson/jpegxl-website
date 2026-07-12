@@ -195,9 +195,19 @@ let sd = 0;
               }
       
               .browser-link {
+                  appearance: none;
+                  padding: 0;
+                  border: 0;
+                  background: transparent;
                   cursor: pointer;
                   text-decoration: none;
-                  color: oklch(83.77% 0.1936 191.95);
+                  color: var(--brand--teal-bright--P3--500);
+                  font: inherit;
+              }
+
+              .browser-link:focus-visible {
+                  outline: 2px solid var(--brand--blue--P3--400);
+                  outline-offset: 3px;
               }
       
               .tooltip {
@@ -310,14 +320,15 @@ let sd = 0;
                         <button id="compute-headroom-button" onclick="headroom()">Compute headroom</button><br><br>
 
                         <div class="text-style-small text-center">
-                            Note: This test runs in <span class="browser-link"
+                            Note: This test runs in <button type="button" class="browser-link"
                                 data-url="chrome://flags/#enable-experimental-web-platform-features"
-                                title="Click to copy URL: chrome://flags/#enable-experimental-web-platform-features. Paste into URL bar and select Enable.">Chrome</span>,
-                            <span class="browser-link"
+                                title="Copy the Chrome flag URL">Chrome</button>,
+                            <button type="button" class="browser-link"
                                 data-url="edge://flags/#enable-experimental-web-platform-features"
-                                title="Click to copy URL: edge://flags/#enable-experimental-web-platform-features. Paste into URL bar and select Enable.">Edge</span>,
+                                title="Copy the Edge flag URL">Edge</button>,
                             and Chromium-derived browsers with ‘Experimental Web Features’ enabled.<br>
                             Safari & Firefox do not currently support this test.
+                            <span id="browser-link-status" class="sr-only" aria-live="polite"></span>
                         </div><br>
 
                         <div class="image-grid-container">
@@ -588,23 +599,26 @@ document.addEventListener('DOMContentLoaded', () => {
 <script is:inline>
 document.addEventListener('DOMContentLoaded', () => {
             const browserLinks = document.querySelectorAll('.browser-link');
+            const browserLinkStatus = document.querySelector<HTMLElement>('#browser-link-status');
 
             browserLinks.forEach(link => {
                 link.addEventListener('click', () => {
                     const url = link.getAttribute('data-url');
+                    if (!url) return;
                     navigator.clipboard.writeText(url).then(() => {
-                        // Create and show tooltip
                         const tooltip = document.createElement('span');
                         tooltip.className = 'tooltiptext';
                         tooltip.textContent = 'Copied!';
                         link.classList.add('tooltip');
                         link.appendChild(tooltip);
+                        if (browserLinkStatus) browserLinkStatus.textContent = `${link.textContent} flag URL copied.`;
 
-                        // Remove tooltip after 2 seconds
                         setTimeout(() => {
-                            link.removeChild(tooltip);
+                            tooltip.remove();
                             link.classList.remove('tooltip');
                         }, 2000);
+                    }).catch(() => {
+                        if (browserLinkStatus) browserLinkStatus.textContent = 'Unable to copy the flag URL.';
                     });
                 });
             });

@@ -6,6 +6,20 @@ const description = 'Timeline of JPEG XL development and key milestones.';
 ---
 
 <BaseLayout title={title} description={description} canonical="https://jpegxl.info/about/history.html">
+<Fragment slot="head">
+  <style is:inline>
+    .timeline-heading {
+      color: var(--brand--teal-bright--P3--600);
+      letter-spacing: .015em;
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-family: var(--font--font-family--barlow);
+      font-size: clamp(1rem, calc(0.868rem + 0.563vw), 1.375rem);
+      font-weight: 600;
+      line-height: 1.2em;
+    }
+  </style>
+</Fragment>
 <section id="main-content" class="section-hero hero-fullspan-graphic gradient-bottom">
       <div class="container-content-vflex centered">
         <div class="wrapper-text color-gradient">
@@ -162,7 +176,7 @@ const description = 'Timeline of JPEG XL development and key milestones.';
           </div>
           <div id="w-node-_21adfc49-8fa0-68df-91d0-2e219fcb7227-be5be146" class="container-content-timeline background-image">
             <div class="wrapper-text centered">
-                  <h4>Early 2018: JPEG launches Call for Proposals for a next-gen image codec (&lsquo;JPEG&nbsp;XL&rsquo;)</h4>
+                  <h2 class="timeline-heading">Early 2018: JPEG launches Call for Proposals for a next-gen image codec (&lsquo;JPEG&nbsp;XL&rsquo;)</h2>
             </div>
           </div>
         </div>
@@ -190,7 +204,7 @@ const description = 'Timeline of JPEG XL development and key milestones.';
           <div id="w-node-_21adfc49-8fa0-68df-91d0-2e219fcb7227-be5be146" class="container-content-timeline background-image">
             <div class="wrapper-text gap-1rem">
               <div class="w-richtext">
-                <h5>It took almost two years to combine Pik and FUIF</h5>
+                <h2 class="timeline-heading">It took almost two years to combine Pik and FUIF</h2>
                 <ul role="list">
                   <li>September 2018: 7 proposals submitted to the JPEG&nbsp;XL CfP, including Pik and FUIF</li>
                   <li>October 2018: The JPEG committee investigates the different proposals</li>
@@ -211,7 +225,7 @@ const description = 'Timeline of JPEG XL development and key milestones.';
           <div id="w-node-_296b8042-12e8-70c9-d134-fb59d78cff4e-be5be146" class="container-content-timeline background-image">
             <div class="wrapper-text gap-1rem">
               <div class="w-richtext">
-                <h5>ISO Standardization Process</h5>
+                <h2 class="timeline-heading">ISO Standardization Process</h2>
                 <ul role="list">
                   <li>April 2019: New Project (NP) started</li>
                   <li>July 2019: Committee Draft (CD)</li>
@@ -234,7 +248,7 @@ const description = 'Timeline of JPEG XL development and key milestones.';
           <div id="w-node-e74b084d-f5c5-c4ce-f896-77e272ecfe75-be5be146" class="container-content-timeline background-image">
             <div class="wrapper-text gap-1rem">
               <div class="w-richtext">
-                <h5 class="heading">First editions published</h5>
+                <h2 class="timeline-heading heading">First editions published</h2>
                 <ul role="list">
                   <li>18181-1 (JPEG XL core codestream): published in March 2022</li>
                   <li>18181-2 (JPEG XL file format): published in Oct 2021</li>

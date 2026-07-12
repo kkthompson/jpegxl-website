@@ -5,9 +5,9 @@
   overflow-x: auto;
   list-style: none;
   font-size: 16px;
-  background: #494b50;
+  background: var(--line-divider);
   border-radius: 50px;
-  box-shadow: 2px 2px 4px #18191b inset;
+  box-shadow: 2px 2px 4px var(--page-black) inset;
   position: relative;
   justify-content: center;
   scrollbar-width: none;
@@ -21,7 +21,7 @@
   appearance: none;
   border: 0;
   background: transparent;
-  color: #18191b;
+  color: var(--text--color--text-black);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -35,7 +35,7 @@
 }
 
 .category-tabs button[aria-selected='true'] {
-  color: #fff;
+  color: var(--base--white);
 }
 
 .category-tabs button:focus-visible {
@@ -49,10 +49,10 @@
   left: 0;
   top: 0;
   z-index: 0;
-  border: 1px solid #18191b;
+  border: 1px solid var(--page-black);
   border-radius: 50px;
-  background: linear-gradient(45deg, #1ae5e0 0%, #0f8a86 100%);
-  box-shadow: 0 0 16px #18191b;
+  background: linear-gradient(45deg, var(--brand--teal-bright--500) 0%, var(--brand--teal-bright--800) 100%);
+  box-shadow: 0 0 16px var(--page-black);
   pointer-events: none;
   transition-duration: 0.6s;
   transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);

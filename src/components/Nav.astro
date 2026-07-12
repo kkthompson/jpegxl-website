@@ -194,8 +194,26 @@
   const mobileMenu = document.querySelector<HTMLElement>('#navbar-mobile-menu');
   const mobileClose = document.querySelector<HTMLButtonElement>('#navbar-mobile-close');
   const mobileBar = document.querySelector<HTMLElement>('.navbar-container-menu-top');
+  const pageWrapper = document.querySelector<HTMLElement>('.page-wrapper');
+  const skipNav = document.querySelector<HTMLElement>('.skip-nav');
   const mobileMedia = window.matchMedia('(max-width: 900px)');
   let lockedScrollY = 0;
+
+  function setBackgroundInert(inert: boolean) {
+    [pageWrapper, skipNav].forEach((element) => {
+      if (!element) return;
+      element.toggleAttribute('inert', inert);
+    });
+  }
+
+  function getMobileMenuFocusable() {
+    if (!mobileMenu) return [];
+    return Array.from(
+      mobileMenu.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((element) => !element.hasAttribute('hidden'));
+  }
 
   function setDesktopMenu(item: HTMLElement, open: boolean) {
     const trigger = item.querySelector<HTMLButtonElement>('.navbar-desktop-trigger');
@@ -270,6 +288,7 @@
     mobileMenu.hidden = !open;
     mobileTrigger.setAttribute('aria-expanded', String(open));
     setPageScrollLocked(open && mobileMedia.matches);
+    setBackgroundInert(open && mobileMedia.matches);
     if (open && moveFocus) mobileClose?.focus();
     if (!open && moveFocus) mobileTrigger.focus();
   }
@@ -298,9 +317,26 @@
   });
 
   document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape') return;
-    closeDesktopMenus();
-    if (mobileMenu && !mobileMenu.hidden) setMobileMenu(false, true);
+    if (event.key === 'Tab' && mobileMenu && !mobileMenu.hidden && mobileMedia.matches) {
+      const focusable = getMobileMenuFocusable();
+      const first = focusable[0];
+      const last = focusable.at(-1);
+      if (!first || !last) return;
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      closeDesktopMenus();
+      if (mobileMenu && !mobileMenu.hidden) setMobileMenu(false, true);
+    }
   });
 
   mobileMedia.addEventListener('change', () => setMobileMenu(false));
