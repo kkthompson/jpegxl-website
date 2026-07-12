@@ -228,40 +228,47 @@ document.addEventListener('DOMContentLoaded', () => {
       const plotHeight = chartHeight - margin.top - margin.bottom;
       const efforts = Object.keys(currentImage.efforts).map(Number).sort((a, b) => a - b);
       const variantsByEffort = efforts.map(effort => currentImage.efforts[String(effort)]);
-      const distances = variantsByEffort.flat().map(([distance]) => distance);
-      const maximumDistance = Math.max(...distances);
       const useLogScale = chartMetric === 'size';
       const valueFor = variant => chartMetric === 'size'
         ? variant[2] / 1024
         : (currentImage.pixels / 1000000) / variant[3];
-      const values = variantsByEffort.flat().map(valueFor);
-      const minimumValue = Math.min(...values);
-      const maximumValue = Math.max(...values);
-      const yMinimum = useLogScale ? 10 ** Math.floor(Math.log10(minimumValue)) : 0;
-      const yMaximum = useLogScale
-        ? 10 ** Math.ceil(Math.log10(maximumValue))
-        : maximumValue <= 15 ? 15 : niceMaximum(maximumValue);
-      const x = distance => margin.left + (distance / maximumDistance) * plotWidth;
-      const y = value => {
-        const scaledValue = useLogScale ? Math.log10(value) : value;
-        const scaledMinimum = useLogScale ? Math.log10(yMinimum) : yMinimum;
-        const scaledMaximum = useLogScale ? Math.log10(yMaximum) : yMaximum;
-        return margin.top + plotHeight - ((scaledValue - scaledMinimum) / (scaledMaximum - scaledMinimum)) * plotHeight;
-      };
-      const metricLabel = chartMetric === 'size' ? 'File size (KB, log scale)' : 'Encoding time (seconds)';
       const selectedEffort = efforts.slice().reverse()[currentEffortIndex];
       const selectedVariants = currentImage.efforts[String(selectedEffort)];
       const selectedVariant = isLosslessPreview
         ? selectedVariants.find(([distance]) => distance === 0) ?? selectedVariants[currentImageIndex]
         : selectedVariants[currentImageIndex];
       const selectedDistance = selectedVariant[0];
+      const focusLossyTime = chartMetric === 'time' && selectedDistance > 0;
+      const displayedVariantsByEffort = focusLossyTime
+        ? variantsByEffort.map(variants => variants.filter(([distance]) => distance > 0))
+        : variantsByEffort;
+      const distances = displayedVariantsByEffort.flat().map(([distance]) => distance);
+      const minimumDistance = Math.min(...distances);
+      const maximumDistance = Math.max(...distances);
+      const values = displayedVariantsByEffort.flat().map(valueFor);
+      const minimumValue = Math.min(...values);
+      const maximumValue = Math.max(...values);
+      const yMinimum = useLogScale ? 10 ** Math.floor(Math.log10(minimumValue)) : 0;
+      const yMaximum = useLogScale
+        ? 10 ** Math.ceil(Math.log10(maximumValue))
+        : focusLossyTime ? niceMaximum(maximumValue) : maximumValue <= 15 ? 15 : niceMaximum(maximumValue);
+      const x = distance => margin.left + ((distance - minimumDistance) / (maximumDistance - minimumDistance)) * plotWidth;
+      const y = value => {
+        const scaledValue = useLogScale ? Math.log10(value) : value;
+        const scaledMinimum = useLogScale ? Math.log10(yMinimum) : yMinimum;
+        const scaledMaximum = useLogScale ? Math.log10(yMaximum) : yMaximum;
+        return margin.top + plotHeight - ((scaledValue - scaledMinimum) / (scaledMaximum - scaledMinimum)) * plotHeight;
+      };
+      const metricLabel = chartMetric === 'size'
+        ? 'File size (KB, log scale)'
+        : focusLossyTime ? 'Encoding time (seconds, lossy detail)' : 'Encoding time (seconds)';
       const selectedValue = valueFor(selectedVariant);
       const selectedEffortIndex = efforts.indexOf(selectedEffort);
       const colors = ['#69c2ff', '#a48cff', '#ce83ea', '#ffad67', '#b7d95a', '#59d0b4', '#ff907d', '#70d8f5'];
       const selectedColor = '#ff4fa3';
       const xTicks = 5;
       const grid = [];
-      const linearTickStep = yMaximum <= 20 ? 5 : yMaximum / 4;
+      const linearTickStep = focusLossyTime ? yMaximum / 4 : yMaximum <= 20 ? 5 : yMaximum / 4;
       const yValues = useLogScale
         ? Array.from(
           { length: Math.round(Math.log10(yMaximum) - Math.log10(yMinimum)) + 1 },
@@ -279,12 +286,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       for (let tick = 0; tick <= xTicks; tick += 1) {
-        const distance = (maximumDistance / xTicks) * tick;
+        const distance = minimumDistance + ((maximumDistance - minimumDistance) / xTicks) * tick;
         const position = x(distance);
-        grid.push(`<text class="chart-tick" x="${position}" y="${chartHeight - margin.bottom + 25}" text-anchor="middle">${distance.toFixed(0)}</text>`);
+        grid.push(`<text class="chart-tick" x="${position}" y="${chartHeight - margin.bottom + 25}" text-anchor="middle">${formatDistanceTick(distance)}</text>`);
       }
 
-      const lines = variantsByEffort.map((variants, index) => {
+      const lines = displayedVariantsByEffort.map((variants, index) => {
         const path = variants.map(([distance, ...rest], pointIndex) => {
           const value = valueFor([distance, ...rest]);
           return `${pointIndex === 0 ? 'M' : 'L'} ${x(distance).toFixed(2)} ${y(value).toFixed(2)}`;
@@ -293,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const lineColor = index === selectedEffortIndex ? selectedColor : colors[index];
         return `<path class="chart-line ${lineState}" d="${path}" stroke="${lineColor}" />`;
       }).join('');
-      const comparisonMarkers = variantsByEffort.map((variants, index) => {
+      const comparisonMarkers = displayedVariantsByEffort.map((variants, index) => {
         const variant = variants.find(([distance]) => distance === selectedDistance);
         if (!variant || index === selectedEffortIndex) return '';
         return `<circle class="chart-comparison-marker" cx="${x(selectedDistance)}" cy="${y(valueFor(variant))}" r="3.5" fill="${colors[index]}" />`;
@@ -315,7 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
       tradeoffChartLegend.innerHTML = efforts.map((effort, index) => `
         <span class="tradeoff-chart-legend-item${index === selectedEffortIndex ? ' is-selected' : ''}"><span class="tradeoff-chart-legend-swatch" style="background-color:${index === selectedEffortIndex ? selectedColor : colors[index]}"></span>Effort ${effort}</span>
       `).join('');
-      tradeoffChartDescription.textContent = `${currentImage.name}. ${metricLabel} by visual distance for efforts ${efforts.join(' through ')}. The selected point is effort ${selectedEffort} at distance ${selectedDistance.toFixed(1)}: ${formatChartValue(selectedValue)}.`;
+      const detailDescription = focusLossyTime ? ' Lossless encoding is excluded to show the lossy range in detail.' : '';
+      tradeoffChartDescription.textContent = `${currentImage.name}. ${metricLabel} by visual distance for efforts ${efforts.join(' through ')}. The selected point is effort ${selectedEffort} at distance ${selectedDistance.toFixed(1)}: ${formatChartValue(selectedValue)}.${detailDescription}`;
     }
 
     function niceMaximum(value) {
@@ -328,6 +336,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function formatChartValue(value) {
       if (chartMetric === 'size') return `${value.toFixed(value < 10 ? 1 : 0)} KB`;
       return `${value.toFixed(value < 1 ? 2 : 1)} s`;
+    }
+
+    function formatDistanceTick(distance) {
+      return distance < 1 ? distance.toFixed(1) : distance.toFixed(0);
     }
 
     function escapeHtml(value) {

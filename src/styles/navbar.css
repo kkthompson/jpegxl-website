@@ -404,6 +404,27 @@ nav.scrolled .navbar_logo-link.w--current {
   .navbar-desktop-items {
     display: none;
   }
+
+  body.mobile-menu-open {
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .container-navbar-dropdown-content {
+    position: fixed;
+    top: var(--mobile-menu-top, 6rem);
+    bottom: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .container-navbar-content {
+    min-height: 100%;
+  }
 }
 
 .navbar-dropdown-content {

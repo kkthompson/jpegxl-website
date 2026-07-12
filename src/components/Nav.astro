@@ -193,7 +193,9 @@
   const mobileTrigger = document.querySelector<HTMLButtonElement>('#navbar-mobile-trigger');
   const mobileMenu = document.querySelector<HTMLElement>('#navbar-mobile-menu');
   const mobileClose = document.querySelector<HTMLButtonElement>('#navbar-mobile-close');
+  const mobileBar = document.querySelector<HTMLElement>('.navbar-container-menu-top');
   const mobileMedia = window.matchMedia('(max-width: 900px)');
+  let lockedScrollY = 0;
 
   function setDesktopMenu(item: HTMLElement, open: boolean) {
     const trigger = item.querySelector<HTMLButtonElement>('.navbar-desktop-trigger');
@@ -244,10 +246,30 @@
     });
   });
 
+  function setPageScrollLocked(locked: boolean) {
+    const body = document.body;
+    if (locked) {
+      if (body.classList.contains('mobile-menu-open')) return;
+      lockedScrollY = window.scrollY;
+      body.style.top = `-${lockedScrollY}px`;
+      body.classList.add('mobile-menu-open');
+      return;
+    }
+
+    if (!body.classList.contains('mobile-menu-open')) return;
+    body.classList.remove('mobile-menu-open');
+    body.style.top = '';
+    window.scrollTo(0, lockedScrollY);
+  }
+
   function setMobileMenu(open: boolean, moveFocus = false) {
     if (!mobileTrigger || !mobileMenu) return;
+    if (open && mobileBar) {
+      mobileMenu.style.setProperty('--mobile-menu-top', `${mobileBar.getBoundingClientRect().height}px`);
+    }
     mobileMenu.hidden = !open;
     mobileTrigger.setAttribute('aria-expanded', String(open));
+    setPageScrollLocked(open && mobileMedia.matches);
     if (open && moveFocus) mobileClose?.focus();
     if (!open && moveFocus) mobileTrigger.focus();
   }

@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import newsData from '../../data/news.json';
+import '../../styles/category-tabs.css';
 
 const title = 'Articles & Coverage – JPEG XL';
 const description =
@@ -136,47 +137,8 @@ const tagSections = [
         flex-wrap: wrap;
         gap: 12px;
       }
-      .tabs {
-        font-size: 15px;
-        padding: 0;
-        list-style: none;
-        background: #494b50;
-        border-radius: 50px;
-        box-shadow: 2px 2px 4px #18191b inset;
-        position: relative;
-        display: inline-block;
-        width: fit-content;
-      }
-      .tabs a {
-        text-decoration: none;
-        color: #18191b;
-        padding: 10px 20px;
-        display: inline-flex;
-        flex-direction: row;
-        align-items: baseline;
-        position: relative;
-        z-index: 1;
-        transition-duration: 0.6s;
-      }
-      .tabs a.active {
-        color: #fff;
-      }
-      .tabs .tab-count {
+      .category-tabs .tab-count {
         margin-left: 5px;
-      }
-      .tabs .selector {
-        height: 100%;
-        display: inline-block;
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: 1;
-        border-radius: 50px;
-        border: 1px solid #18191b;
-        box-shadow: 0 0 16px #18191b;
-        transition-duration: 0.6s;
-        transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        background: linear-gradient(45deg, #1ae5e0 0%, #0f8a86 100%);
       }
       .news-content {
         padding: 20px;
@@ -423,12 +385,12 @@ const tagSections = [
         }
       }
       @media (max-width: 768px) {
-        .tabs a {
+        .category-tabs button {
           flex-direction: column;
           align-items: center;
           padding: 8px 14px;
         }
-        .tabs .tab-count {
+        .category-tabs .tab-count {
           display: block;
           margin-top: 0;
         }
@@ -498,18 +460,25 @@ const tagSections = [
                     </div>
                   </div>
                   <nav
-                    class="tabs"
+                    class="category-tabs"
                     id="tab-bar"
-                    style="display: inline-block;"
+                    role="tablist"
                     aria-label="News categories"
                   >
                     <div class="selector"></div>
                     {
                       newsCategories.map(({ category, items }, index) => (
-                        <a href="#" class={index === 0 ? 'active' : ''} data-index={index}>
+                        <button
+                          type="button"
+                          id={`news-tab-${index}`}
+                          role="tab"
+                          aria-selected={index === 0 ? 'true' : 'false'}
+                          aria-controls={`news-panel-${index}`}
+                          data-index={index}
+                        >
                           <span class="tab-label">{category}</span>
                           <span class="tab-count"> ({items.length})</span>
-                        </a>
+                        </button>
                       ))
                     }
                   </nav>
@@ -519,9 +488,12 @@ const tagSections = [
                 {
                   newsCategories.map(({ category, items }, index) => (
                     <div
+                      id={`news-panel-${index}`}
                       class="news-panel"
+                      role="tabpanel"
+                      aria-labelledby={`news-tab-${index}`}
                       data-category={category}
-                      style={index === 0 ? undefined : 'display: none;'}
+                      hidden={index !== 0}
                     >
                       {items.map((item) => {
                         const authors = getAuthors(item);
@@ -586,8 +558,9 @@ const tagSections = [
     </main>
   </div>
   <script>
-    const tabs = Array.from(document.querySelectorAll<HTMLAnchorElement>('.tabs a'));
-    const selector = document.querySelector<HTMLElement>('.tabs .selector')!;
+    import { initCategoryTabs } from '../../scripts/category-tabs';
+
+    const tabList = document.getElementById('tab-bar')!;
     const content = document.getElementById('news-content')!;
     const panels = Array.from(content.querySelectorAll<HTMLElement>('.news-panel'));
     const categories = panels.map((panel) => panel.dataset.category!);
@@ -620,7 +593,7 @@ const tagSections = [
           item.style.display = matches ? '' : 'none';
           if (matches) count++;
         });
-        const countEl = tabs[index]?.querySelector('.tab-count');
+        const countEl = tabList.querySelectorAll<HTMLElement>('[role="tab"]')[index]?.querySelector('.tab-count');
         if (countEl) countEl.textContent = ` (${count})`;
       });
     }
@@ -676,30 +649,26 @@ const tagSections = [
       }
     }
 
-    function setSelector() {
-      const activeTab = tabs[currentTabIndex];
-      if (!activeTab) return;
-      selector.style.width = activeTab.offsetWidth + 'px';
-      selector.style.left = activeTab.offsetLeft + 'px';
-    }
-
-    function switchTab(index: number, updateHistory: boolean, fade = true) {
-      currentTabIndex = index;
-      if (updateHistory) updateUrl();
-      tabs.forEach((tab, tabIndex) => tab.classList.toggle('active', tabIndex === index));
-      setSelector();
-
-      const show = () =>
-        panels.forEach((panel, i) => (panel.style.display = i === index ? '' : 'none'));
-      if (fade) {
+    const categoryTabs = initCategoryTabs({
+      tabList,
+      panels,
+      onChange: ({ index, source, animate, showPanels }) => {
+        currentTabIndex = index;
+        if (source === 'pointer' || source === 'keyboard') updateUrl();
+        if (!animate) {
+          showPanels();
+          return;
+        }
         content.classList.add('fade-out');
-        setTimeout(() => {
-          show();
+        window.setTimeout(() => {
+          showPanels();
           content.classList.remove('fade-out');
         }, 300);
-      } else {
-        show();
-      }
+      },
+    });
+
+    function switchTab(index: number, fade = true) {
+      categoryTabs.activate(index, { animate: fade, source: 'programmatic' });
     }
 
     function setFilter(tag: string | null, author: string | null, publication: string | null) {
@@ -710,13 +679,6 @@ const tagSections = [
       updateFilterBar();
       applyFilter();
     }
-
-    tabs.forEach((tab, index) => {
-      tab.addEventListener('click', (event) => {
-        event.preventDefault();
-        switchTab(index, true);
-      });
-    });
 
     document.getElementById('filter-clear')!.addEventListener('click', (event) => {
       event.preventDefault();
@@ -754,7 +716,7 @@ const tagSections = [
       currentPublicationFilter = state.publication;
       updateFilterBar();
       applyFilter();
-      switchTab(state.tabIndex, false);
+      switchTab(state.tabIndex);
     });
 
     function init() {
@@ -764,7 +726,7 @@ const tagSections = [
       currentPublicationFilter = state.publication;
       updateFilterBar();
       applyFilter();
-      switchTab(state.tabIndex, false, false);
+      switchTab(state.tabIndex, false);
     }
 
     // Selector width depends on final font metrics; wait for full load like the

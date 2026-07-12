@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import { Marked, Renderer, marked } from 'marked';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
+import '../../styles/category-tabs.css';
 
 const title = 'FAQs – JPEG XL';
 const description = 'Frequently asked questions about the JPEG XL image format.';
@@ -109,49 +110,6 @@ const faqJsonLd = {
       .wrapper {
         text-align: center;
         margin: 20px 0;
-      }
-      .tabs {
-        font-size: 16px;
-        padding: 0;
-        list-style: none;
-        background: #494b50;
-        border-radius: 50px;
-        box-shadow: 2px 2px 4px #18191b inset;
-        position: relative;
-        display: inline-flex;
-        width: auto;
-        justify-content: center;
-      }
-      .tabs button {
-        appearance: none;
-        border: 0;
-        background: transparent;
-        font: inherit;
-        text-decoration: none;
-        color: #18191b;
-        padding: 10px 20px;
-        display: inline-block;
-        position: relative;
-        z-index: 1;
-        transition-duration: 0.6s;
-        cursor: pointer;
-      }
-      .tabs button.active {
-        color: #fff;
-      }
-      .tabs .selector {
-        height: 100%;
-        display: inline-block;
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: 1;
-        border-radius: 50px;
-        border: 1px solid #18191b;
-        box-shadow: 0 0 16px #18191b;
-        transition-duration: 0.6s;
-        transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        background: linear-gradient(45deg, #1ae5e0 0%, #0f8a86 100%);
       }
       .tab-content {
         padding: 20px;
@@ -363,14 +321,13 @@ const faqJsonLd = {
         <div class="wrapper-content centered">
           <div class="code-faqs w-embed">
             <div class="wrapper">
-              <div class="tabs" role="tablist" aria-label="FAQ categories">
+              <div class="category-tabs" role="tablist" aria-label="FAQ categories">
                 <div class="selector"></div>
                 {
                   rendered.map(({ entry }, i) => (
                     <button
                       type="button"
                       id={`${entry.id}-tab`}
-                      class={i === 0 ? 'active' : ''}
                       role="tab"
                       aria-selected={i === 0 ? 'true' : 'false'}
                       aria-controls={`${entry.id}-panel`}
@@ -422,29 +379,13 @@ const faqJsonLd = {
   </div>
 
   <script>
-    const tabsContainer = document.querySelector('.tabs')!;
-    const tabs = document.querySelectorAll<HTMLButtonElement>('.tabs button');
-    const selector = document.querySelector<HTMLElement>('.selector')!;
+    import { initCategoryTabs } from '../../scripts/category-tabs';
+
+    const tabsContainer = document.querySelector<HTMLElement>('.category-tabs')!;
     const tabContents = document.querySelectorAll<HTMLElement>('.tab-content');
     const copyButtons = document.querySelectorAll<HTMLButtonElement>('[data-copy-code]');
 
-    function setSelector(elem: HTMLElement) {
-      selector.style.width = elem.offsetWidth + 'px';
-      selector.style.left = elem.offsetLeft + 'px';
-    }
-
-    tabsContainer.addEventListener('click', (evt) => {
-      const tab = (evt.target as HTMLElement).closest<HTMLButtonElement>('[role="tab"]');
-      if (!tab) return;
-      const tabName = tab.getAttribute('data-tab')!;
-      tabs.forEach((t) => t.classList.remove('active'));
-      tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
-      tabContents.forEach((content) => {
-        content.hidden = content.id !== `${tabName}-panel`;
-      });
-      tab.classList.add('active');
-      setSelector(tab);
-    });
+    initCategoryTabs({ tabList: tabsContainer, panels: Array.from(tabContents) });
 
     async function copyText(text: string) {
       await navigator.clipboard.writeText(text);
@@ -474,8 +415,5 @@ const faqJsonLd = {
         }
       });
     });
-
-    // Set initial position of selector
-    setSelector(document.querySelector<HTMLElement>('.tabs button.active')!);
   </script>
 </BaseLayout>

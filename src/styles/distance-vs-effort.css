@@ -185,17 +185,8 @@ input[type=range]::-webkit-slider-container {
   text-transform: uppercase;
 }
 
-.tradeoff-chart h3 {
-  margin: 0;
-  color: #fff;
-  font-family: var(--font--font-family--barlow);
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  line-height: 1.1;
-}
-
 .tradeoff-chart-intro {
-  max-width: 52ch;
-  margin: 0.65rem 0 0;
+  margin: 0;
   color: #c5c5c5;
   font-size: 0.9rem;
   line-height: 1.45;

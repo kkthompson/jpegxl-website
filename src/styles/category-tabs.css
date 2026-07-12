@@ -1,0 +1,66 @@
+.category-tabs {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+  font-size: 16px;
+  background: #494b50;
+  border-radius: 50px;
+  box-shadow: 2px 2px 4px #18191b inset;
+  position: relative;
+  justify-content: center;
+  scrollbar-width: none;
+}
+
+.category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.category-tabs button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #18191b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font: inherit;
+  padding: 10px 20px;
+  position: relative;
+  text-decoration: none;
+  transition: color 0.6s;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.category-tabs button[aria-selected='true'] {
+  color: #fff;
+}
+
+.category-tabs button:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: -4px;
+}
+
+.category-tabs .selector {
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  border: 1px solid #18191b;
+  border-radius: 50px;
+  background: linear-gradient(45deg, #1ae5e0 0%, #0f8a86 100%);
+  box-shadow: 0 0 16px #18191b;
+  pointer-events: none;
+  transition-duration: 0.6s;
+  transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-tabs button,
+  .category-tabs .selector {
+    transition-duration: 0.01ms;
+  }
+}

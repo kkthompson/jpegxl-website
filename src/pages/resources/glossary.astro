@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import glossaryData from '../../data/glossary.json';
+import '../../styles/category-tabs.css';
 
 const title = 'Glossary – JPEG XL';
 const description = 'Definitions of terms used in the JPEG XL ecosystem.';
@@ -44,44 +45,6 @@ const grouped = subcategories.map((subcategory) => ({
         margin: 20px 0;
         width: 100%;
         max-width: 100%;
-      }
-      .tabs {
-        font-size: 16px;
-        padding: 0;
-        list-style: none;
-        background: #494b50;
-        display: inline-flex;
-        border-radius: 50px;
-        box-shadow: 2px 2px 4px #18191b inset;
-        position: relative;
-        width: fit-content;
-        justify-content: center;
-      }
-      .tabs a {
-        text-decoration: none;
-        color: #18191b;
-        padding: 8px 24px;
-        display: inline-block;
-        position: relative;
-        z-index: 1;
-        transition-duration: 0.6s;
-      }
-      .tabs a.active {
-        color: #fff;
-      }
-      .tabs .selector {
-        height: 100%;
-        display: inline-block;
-        position: absolute;
-        left: 0;
-        top: 0;
-        z-index: 1;
-        border-radius: 50px;
-        border: 1px solid #18191b;
-        box-shadow: 0 0 16px #18191b;
-        transition-duration: 0.6s;
-        transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        background: linear-gradient(45deg, #1ae5e0 0%, #0f8a86 100%);
       }
       .glossary-content {
         opacity: 1;
@@ -149,7 +112,7 @@ const grouped = subcategories.map((subcategory) => ({
         color: #fff;
       }
       @media (max-width: 800px) {
-        .tabs {
+        .category-tabs {
           display: none;
         }
         .dropdown {
@@ -169,13 +132,20 @@ const grouped = subcategories.map((subcategory) => ({
         <div class="wrapper-content centered">
           <div class="w-embed">
             <div class="wrapper">
-              <nav class="tabs" id="tab-bar" aria-label="Glossary categories">
+              <nav class="category-tabs" id="tab-bar" role="tablist" aria-label="Glossary categories">
                 <div class="selector"></div>
                 {
                   grouped.map(({ subcategory }, index) => (
-                    <a href="#" class={index === 0 ? 'active' : ''} data-index={index}>
+                    <button
+                      type="button"
+                      id={`glossary-tab-${index}`}
+                      role="tab"
+                      aria-selected={index === 0 ? 'true' : 'false'}
+                      aria-controls={`glossary-panel-${index}`}
+                      data-index={index}
+                    >
                       {subcategory}
-                    </a>
+                    </button>
                   ))
                 }
               </nav>
@@ -194,9 +164,12 @@ const grouped = subcategories.map((subcategory) => ({
               {
                 grouped.map(({ terms }, index) => (
                   <div
+                    id={`glossary-panel-${index}`}
                     class="glossary-panel"
+                    role="tabpanel"
+                    aria-labelledby={`glossary-tab-${index}`}
                     data-index={index}
-                    style={index === 0 ? undefined : 'display: none;'}
+                    hidden={index !== 0}
                   >
                     {terms.map((item) => (
                       <div class="glossary-term">
@@ -220,43 +193,32 @@ const grouped = subcategories.map((subcategory) => ({
     </main>
   </div>
   <script>
-    const tabs = document.querySelectorAll<HTMLAnchorElement>('.tabs a');
-    const selector = document.querySelector<HTMLElement>('.selector')!;
+    import { initCategoryTabs } from '../../scripts/category-tabs';
+
+    const tabList = document.querySelector<HTMLElement>('.category-tabs')!;
     const dropdown = document.getElementById('category-dropdown') as HTMLSelectElement;
     const content = document.getElementById('glossary-content')!;
-    const panels = content.querySelectorAll<HTMLElement>('.glossary-panel');
-
-    function setSelector(elem: HTMLElement) {
-      selector.style.width = elem.offsetWidth + 'px';
-      selector.style.left = elem.offsetLeft + 'px';
-    }
-
-    function switchTab(index: number, fade = true) {
-      tabs.forEach((tab, i) => tab.classList.toggle('active', i === index));
-      if (tabs[index]) setSelector(tabs[index]);
-      dropdown.value = String(index);
-
-      const show = () =>
-        panels.forEach((panel, i) => (panel.style.display = i === index ? '' : 'none'));
-      if (fade) {
+    const panels = Array.from(content.querySelectorAll<HTMLElement>('.glossary-panel'));
+    const categoryTabs = initCategoryTabs({
+      tabList,
+      panels,
+      onChange: ({ index, animate, showPanels }) => {
+        dropdown.value = String(index);
+        if (!animate) {
+          showPanels();
+          return;
+        }
         content.classList.add('fade-out');
-        setTimeout(() => {
-          show();
+        window.setTimeout(() => {
+          showPanels();
           content.classList.remove('fade-out');
         }, 300);
-      } else {
-        show();
-      }
-    }
-
-    tabs.forEach((tab, index) => {
-      tab.addEventListener('click', (e) => {
-        e.preventDefault();
-        switchTab(index);
-      });
+      },
     });
 
-    dropdown.addEventListener('change', () => switchTab(parseInt(dropdown.value)));
+    dropdown.addEventListener('change', () =>
+      categoryTabs.activate(parseInt(dropdown.value), { source: 'programmatic' }),
+    );
 
     // Clicking a term's link toggles its definition without moving the page.
     content.addEventListener('click', (e) => {
@@ -274,13 +236,11 @@ const grouped = subcategories.map((subcategory) => ({
       const anchor = document.getElementById(term);
       if (!anchor || !content.contains(anchor)) return;
       const panel = anchor.closest<HTMLElement>('.glossary-panel')!;
-      switchTab(Number(panel.dataset.index), false);
+      categoryTabs.activate(Number(panel.dataset.index), { animate: false, source: 'programmatic' });
       const details = anchor.closest('details')!;
       details.open = true;
       anchor.scrollIntoView();
     }
-
-    setSelector(tabs[0]);
     openFromHash();
     window.addEventListener('hashchange', openFromHash);
   </script>
