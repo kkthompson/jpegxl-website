@@ -34,6 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const effortSliderLabels = document.getElementById('effort-slider-labels');
     const distanceLabel = document.querySelector('.distance-label');
     const effortLabel = document.querySelector('.effort-label');
+    const tradeoffChartSvg = document.getElementById('tradeoff-chart-svg');
+    const tradeoffChartLegend = document.getElementById('tradeoff-chart-legend');
+    const tradeoffChartDescription = document.getElementById('tradeoff-chart-description');
+    const tradeoffChartToggles = document.querySelectorAll('[data-chart-metric]');
     let currentImageIndex = 0;
     let currentEffortIndex = 0;
     let previousDistance = 0; // Variable to store the previous distance value
@@ -46,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let panOriginX = 0;
     let panOriginY = 0;
     let isLosslessPreview = false;
+    let chartMetric = 'size';
 
     let currentImage;
     let loadVersion = 0;
@@ -61,6 +66,17 @@ document.addEventListener('DOMContentLoaded', () => {
     effortSlider.addEventListener('input', handleEffortChange);
     slider.addEventListener('input', handleDistanceChange);
     zoomSlider.addEventListener('input', handleZoomChange);
+    tradeoffChartToggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        chartMetric = toggle.dataset.chartMetric;
+        tradeoffChartToggles.forEach(button => {
+          const isSelected = button === toggle;
+          button.classList.toggle('is-selected', isSelected);
+          button.setAttribute('aria-pressed', String(isSelected));
+        });
+        updateTradeoffChart();
+      });
+    });
     imageElement.addEventListener('load', () => {
       clampPan();
       applyZoomAndPan();
@@ -125,8 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const efforts = initializeEffortSlider();
       const effort = efforts[currentEffortIndex];
-      const { variants } = initializeDistanceSlider(effort);
+      const { distances, variants } = initializeDistanceSlider(effort);
       updateImageAndInfo(currentImageIndex, variants, effort);
+      updateDistanceLabel(isLosslessPreview ? 0 : distances[currentImageIndex]);
     }
 
     function handleEffortChange() {
@@ -198,6 +215,129 @@ document.addEventListener('DOMContentLoaded', () => {
       ssimSpan.textContent = Number(ssim).toFixed(2); // Limit SSIMU2 to 2 decimals
       const compressionTime = (currentImage.pixels / 1000000) / encodingSpeed;
       compressionTimeSpan.textContent = compressionTime.toFixed(3); // Limit to 3 decimals
+      updateTradeoffChart();
+    }
+
+    function updateTradeoffChart() {
+      if (!currentImage) return;
+
+      const chartWidth = 896;
+      const chartHeight = 416;
+      const margin = { top: 28, right: 26, bottom: 54, left: 72 };
+      const plotWidth = chartWidth - margin.left - margin.right;
+      const plotHeight = chartHeight - margin.top - margin.bottom;
+      const efforts = Object.keys(currentImage.efforts).map(Number).sort((a, b) => a - b);
+      const variantsByEffort = efforts.map(effort => currentImage.efforts[String(effort)]);
+      const distances = variantsByEffort.flat().map(([distance]) => distance);
+      const maximumDistance = Math.max(...distances);
+      const useLogScale = chartMetric === 'size';
+      const valueFor = variant => chartMetric === 'size'
+        ? variant[2] / 1024
+        : (currentImage.pixels / 1000000) / variant[3];
+      const values = variantsByEffort.flat().map(valueFor);
+      const minimumValue = Math.min(...values);
+      const maximumValue = Math.max(...values);
+      const yMinimum = useLogScale ? 10 ** Math.floor(Math.log10(minimumValue)) : 0;
+      const yMaximum = useLogScale
+        ? 10 ** Math.ceil(Math.log10(maximumValue))
+        : maximumValue <= 15 ? 15 : niceMaximum(maximumValue);
+      const x = distance => margin.left + (distance / maximumDistance) * plotWidth;
+      const y = value => {
+        const scaledValue = useLogScale ? Math.log10(value) : value;
+        const scaledMinimum = useLogScale ? Math.log10(yMinimum) : yMinimum;
+        const scaledMaximum = useLogScale ? Math.log10(yMaximum) : yMaximum;
+        return margin.top + plotHeight - ((scaledValue - scaledMinimum) / (scaledMaximum - scaledMinimum)) * plotHeight;
+      };
+      const metricLabel = chartMetric === 'size' ? 'File size (KB, log scale)' : 'Encoding time (seconds)';
+      const selectedEffort = efforts.slice().reverse()[currentEffortIndex];
+      const selectedVariants = currentImage.efforts[String(selectedEffort)];
+      const selectedVariant = isLosslessPreview
+        ? selectedVariants.find(([distance]) => distance === 0) ?? selectedVariants[currentImageIndex]
+        : selectedVariants[currentImageIndex];
+      const selectedDistance = selectedVariant[0];
+      const selectedValue = valueFor(selectedVariant);
+      const selectedEffortIndex = efforts.indexOf(selectedEffort);
+      const colors = ['#69c2ff', '#a48cff', '#ce83ea', '#ffad67', '#b7d95a', '#59d0b4', '#ff907d', '#70d8f5'];
+      const selectedColor = '#ff4fa3';
+      const xTicks = 5;
+      const grid = [];
+      const linearTickStep = yMaximum <= 20 ? 5 : yMaximum / 4;
+      const yValues = useLogScale
+        ? Array.from(
+          { length: Math.round(Math.log10(yMaximum) - Math.log10(yMinimum)) + 1 },
+          (_, index) => 10 ** (Math.log10(yMinimum) + index),
+        )
+        : Array.from(
+          { length: Math.round(yMaximum / linearTickStep) + 1 },
+          (_, index) => linearTickStep * index,
+        );
+
+      for (const value of yValues) {
+        const position = y(value);
+        grid.push(`<line class="chart-grid" x1="${margin.left}" x2="${chartWidth - margin.right}" y1="${position}" y2="${position}" />`);
+        grid.push(`<text class="chart-tick" x="${margin.left - 10}" y="${position + 4}" text-anchor="end">${formatChartValue(value)}</text>`);
+      }
+
+      for (let tick = 0; tick <= xTicks; tick += 1) {
+        const distance = (maximumDistance / xTicks) * tick;
+        const position = x(distance);
+        grid.push(`<text class="chart-tick" x="${position}" y="${chartHeight - margin.bottom + 25}" text-anchor="middle">${distance.toFixed(0)}</text>`);
+      }
+
+      const lines = variantsByEffort.map((variants, index) => {
+        const path = variants.map(([distance, ...rest], pointIndex) => {
+          const value = valueFor([distance, ...rest]);
+          return `${pointIndex === 0 ? 'M' : 'L'} ${x(distance).toFixed(2)} ${y(value).toFixed(2)}`;
+        }).join(' ');
+        const lineState = index === selectedEffortIndex ? 'is-selected' : 'is-muted';
+        const lineColor = index === selectedEffortIndex ? selectedColor : colors[index];
+        return `<path class="chart-line ${lineState}" d="${path}" stroke="${lineColor}" />`;
+      }).join('');
+      const comparisonMarkers = variantsByEffort.map((variants, index) => {
+        const variant = variants.find(([distance]) => distance === selectedDistance);
+        if (!variant || index === selectedEffortIndex) return '';
+        return `<circle class="chart-comparison-marker" cx="${x(selectedDistance)}" cy="${y(valueFor(variant))}" r="3.5" fill="${colors[index]}" />`;
+      }).join('');
+
+      tradeoffChartSvg.innerHTML = `
+        <title>${escapeHtml(`${currentImage.name}: ${metricLabel} by distance and encoder effort`)}</title>
+        <g>${grid.join('')}</g>
+        <line class="chart-grid" x1="${margin.left}" x2="${chartWidth - margin.right}" y1="${margin.top + plotHeight}" y2="${margin.top + plotHeight}" />
+        ${lines}
+        <line class="chart-selection-guide" x1="${x(selectedDistance)}" x2="${x(selectedDistance)}" y1="${margin.top}" y2="${margin.top + plotHeight}" />
+        ${comparisonMarkers}
+        <circle class="chart-marker-halo" cx="${x(selectedDistance)}" cy="${y(selectedValue)}" r="6" />
+        <circle class="chart-marker" cx="${x(selectedDistance)}" cy="${y(selectedValue)}" r="3" fill="${selectedColor}" />
+        <text class="chart-axis" x="${margin.left}" y="15">${metricLabel}</text>
+        <text class="chart-axis" x="${margin.left + plotWidth / 2}" y="${chartHeight - 8}" text-anchor="middle">Visual distance</text>
+      `;
+
+      tradeoffChartLegend.innerHTML = efforts.map((effort, index) => `
+        <span class="tradeoff-chart-legend-item${index === selectedEffortIndex ? ' is-selected' : ''}"><span class="tradeoff-chart-legend-swatch" style="background-color:${index === selectedEffortIndex ? selectedColor : colors[index]}"></span>Effort ${effort}</span>
+      `).join('');
+      tradeoffChartDescription.textContent = `${currentImage.name}. ${metricLabel} by visual distance for efforts ${efforts.join(' through ')}. The selected point is effort ${selectedEffort} at distance ${selectedDistance.toFixed(1)}: ${formatChartValue(selectedValue)}.`;
+    }
+
+    function niceMaximum(value) {
+      const power = 10 ** Math.floor(Math.log10(value));
+      const fraction = value / power;
+      const roundedFraction = fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10;
+      return roundedFraction * power;
+    }
+
+    function formatChartValue(value) {
+      if (chartMetric === 'size') return `${value.toFixed(value < 10 ? 1 : 0)} KB`;
+      return `${value.toFixed(value < 1 ? 2 : 1)} s`;
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>'"]/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;',
+      })[character]);
     }
     function handleZoomChange() {
       const nextZoom = parseFloat(zoomSlider.value);

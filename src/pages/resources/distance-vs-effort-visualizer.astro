@@ -73,23 +73,40 @@ const description = 'Compare codecs by perceptual distance and encoding effort.'
                     <p><span class="label">Encoding Time:</span> <span id="compression-time"></span> s</p>
                   </div>
                 </div>
+                <section class="tradeoff-chart" aria-labelledby="tradeoff-chart-title">
+                  <div class="tradeoff-chart-header">
+                    <div>
+                      <p class="tradeoff-chart-kicker">Compression trade-offs</p>
+                      <h3 id="tradeoff-chart-title">The curve behind the image</h3>
+                      <p class="tradeoff-chart-intro">Each line shows what a higher encoder effort buys at the same visual distance.</p>
+                    </div>
+                    <div class="tradeoff-chart-controls" role="group" aria-label="Chart metric">
+                      <button type="button" class="tradeoff-chart-toggle is-selected" data-chart-metric="size" aria-pressed="true">File size</button>
+                      <button type="button" class="tradeoff-chart-toggle" data-chart-metric="time" aria-pressed="false">Encoding time</button>
+                    </div>
+                  </div>
+                  <svg id="tradeoff-chart-svg" class="tradeoff-chart-svg" viewBox="0 0 896 416" role="img" aria-labelledby="tradeoff-chart-title tradeoff-chart-description"></svg>
+                  <p id="tradeoff-chart-description" class="visually-hidden"></p>
+                  <div id="tradeoff-chart-legend" class="tradeoff-chart-legend" aria-label="Effort line legend"></div>
+                  <p class="tradeoff-chart-caption">The outlined line and point match your current effort. The vertical guide compares every effort at the selected distance.</p>
+                </section>
               </div>
             </div>
           </div>
         </div>
         <div class="spacer-4rem"></div>
-        <div class="wrapper-text width-small">
+        <div class="visualizer-notes">
           <div class="text-small-regular centered"><b>Distance</b> quantifies visual distortion using the psychovisually
-            robust Butteraugli metric, where zero represents mathematically lossless compression.
+              robust Butteraugli metric, where zero represents mathematically lossless compression.
           </div>
+          <p></p>
+          <div class="text-small-regular centered"><b>Effort</b> controls the amount of computing power (CPU and memory)
+            used to optimize compression efficiency while maintaining the target distance.
+          </div>
+          <p></p>
+          <div class="text-small-regular centered"><b>Encoding Time:</b> Images were compressed using libjxl 0.12 on a
+            12-Core (8 Performance & 4 Efficiency), 96GB, M2 Max MacBook Pro on July 11, 2026.</div>
         </div>
-        <p></p>
-        <div class="text-small-regular centered"><b>Effort</b> controls the amount of computing power (CPU and memory)
-          used to optimize compression efficiency while maintaining the target distance.
-        </div>
-        <p></p>
-        <div class="text-small-regular centered"><b>Encoding Time:</b> Images were compressed using libjxl 0.10.2 on a
-          10-Core, 32GB, M1 Max MacBook Pro on June 14, 2024.</div>
         <div class="spacer-4rem"></div>
       </main>
     </div>
