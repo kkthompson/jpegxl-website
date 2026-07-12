@@ -92,10 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (requestVersion !== loadVersion) return;
 
         currentImage = image;
+        isLosslessPreview = false;
         currentEffortIndex = 0;
         currentImageIndex = 0;
         previousDistance = 0;
         const efforts = initializeEffortSlider();
+        effortSlider.value = currentEffortIndex;
         updateSlidersAndImage(efforts[0]);
       } catch (error) {
         console.error(`Error fetching image data for ${id}:`, error);
@@ -165,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const distances = variants.map(variant => variant[0]);
       slider.min = 0;
       slider.max = distances.length - 1;
+      slider.value = currentImageIndex;
       sliderLabels.innerHTML = '';
       distances.forEach((distance, index) => {
         const isSampledTick = index % Math.ceil(distances.length / 10) === 0;
