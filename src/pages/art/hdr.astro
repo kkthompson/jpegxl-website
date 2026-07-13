@@ -9,6 +9,10 @@ const canonical = "https://jpegxl.info/art/hdr.html";
 
 <BaseLayout title={title} description={description} canonical={canonical}>
   <Fragment slot="head">
+    <!-- Local JXL.js fallback renderer for browsers without native JPEG XL support. -->
+    <script is:inline src="/resources/jxl-mark-embedded.js"></script>
+    <script is:inline src="/serviceworker.min.js"></script>
+    <script is:inline src="/resources/jxl.min.js"></script>
   </Fragment>
 
   <section id="main-content" class="section-hero hero-fullspan-graphic gradient-bottom">
