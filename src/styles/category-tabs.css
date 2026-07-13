@@ -21,7 +21,7 @@
   appearance: none;
   border: 0;
   background: transparent;
-  color: var(--text--color--text-black);
+  color: color-mix(in srgb, var(--base--white) 85%, transparent);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -35,7 +35,7 @@
 }
 
 .category-tabs button[aria-selected='true'] {
-  color: var(--base--white);
+  color: var(--text--color--text-black);
 }
 
 .category-tabs button:focus-visible {

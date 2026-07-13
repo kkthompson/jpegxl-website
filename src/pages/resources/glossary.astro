@@ -132,7 +132,7 @@ const grouped = subcategories.map((subcategory) => ({
         <div class="wrapper-content centered">
           <div class="w-embed">
             <div class="wrapper">
-              <nav class="category-tabs" id="tab-bar" role="tablist" aria-label="Glossary categories">
+              <div class="category-tabs" id="tab-bar" role="tablist" aria-label="Glossary categories">
                 <div class="selector"></div>
                 {
                   grouped.map(({ subcategory }, index) => (
@@ -148,7 +148,7 @@ const grouped = subcategories.map((subcategory) => ({
                     </button>
                   ))
                 }
-              </nav>
+              </div>
               <div class="dropdown">
                 <label class="sr-only" for="category-dropdown">Glossary category</label>
                 <select id="category-dropdown">
