@@ -11,8 +11,9 @@
         />
       </a>
 
-      <!-- Desktop navigation -->
-      <div class="navbar-desktop-items">
+      <div class="navbar-navigation-actions">
+        <!-- Desktop navigation -->
+        <div class="navbar-desktop-items">
         <div class="navbar-desktop-item">
           <button
             type="button"
@@ -103,19 +104,46 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Mobile hamburger toggle -->
-      <div class="navbar_menu-items navbar-mobile-toggle">
-        <button
-          id="navbar-mobile-trigger"
-          type="button"
-          class="navbar-toggle navbar_link navbar-top w-inline-block button"
-          aria-controls="navbar-mobile-menu"
-          aria-expanded="false"
-        >
-          <span class="sr-only">Open navigation menu</span>
-        </button>
+        <div id="navbar-jxl-decoder-info" class="navbar-jxl-decoder-info" data-jxl-decoder-info hidden>
+          <button
+            id="navbar-jxl-decoder-trigger"
+            type="button"
+            aria-controls="navbar-jxl-decoder-message"
+            aria-expanded="false"
+          >
+            <span aria-hidden="true">i</span>
+            <span class="sr-only">JPEG XL decoder information</span>
+          </button>
+          <div id="navbar-jxl-decoder-message" role="tooltip" hidden>
+            Your browser doesn&rsquo;t support JXL natively, so this page is using a local WebAssembly decoder. Rendering may be slower than native support.
+          </div>
+        </div>
+        </div>
+
+        <!-- Mobile actions: decoder information on the left, menu on the right. -->
+        <div class="navbar-mobile-actions">
+          <div class="navbar-jxl-decoder-info" data-jxl-decoder-info hidden>
+            <button type="button" aria-controls="navbar-jxl-decoder-message-mobile" aria-expanded="false">
+              <span aria-hidden="true">i</span>
+              <span class="sr-only">JPEG XL decoder information</span>
+            </button>
+            <div id="navbar-jxl-decoder-message-mobile" role="tooltip" hidden>
+              Your browser doesn&rsquo;t support JXL natively, so this page is using a local WebAssembly decoder. Rendering may be slower than native support.
+            </div>
+          </div>
+          <div class="navbar_menu-items navbar-mobile-toggle">
+            <button
+              id="navbar-mobile-trigger"
+              type="button"
+              class="navbar-toggle navbar_link navbar-top w-inline-block button"
+              aria-controls="navbar-mobile-menu"
+              aria-expanded="false"
+            >
+              <span class="sr-only">Open navigation menu</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -196,6 +224,10 @@
   const mobileBar = document.querySelector<HTMLElement>('.navbar-container-menu-top');
   const pageWrapper = document.querySelector<HTMLElement>('.page-wrapper');
   const skipNav = document.querySelector<HTMLElement>('.skip-nav');
+  const jxlDecoderInfos = Array.from(document.querySelectorAll<HTMLElement>('[data-jxl-decoder-info]'));
+  const jxlDecoderTriggers = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('[data-jxl-decoder-info] button'),
+  );
   const mobileMedia = window.matchMedia('(max-width: 900px)');
   let lockedScrollY = 0;
 
@@ -225,6 +257,61 @@
     desktopItems.forEach((item) => {
       if (item !== except) setDesktopMenu(item, false);
     });
+  }
+
+  function setJxlDecoderMessage(trigger: HTMLButtonElement, open: boolean) {
+    const message = trigger.closest<HTMLElement>('[data-jxl-decoder-info]')?.querySelector<HTMLElement>('[role="tooltip"]');
+    trigger.setAttribute('aria-expanded', String(open));
+    if (message) message.hidden = !open;
+  }
+
+  function closeJxlDecoderMessages(except?: HTMLButtonElement) {
+    jxlDecoderTriggers.forEach((trigger) => {
+      if (trigger !== except) setJxlDecoderMessage(trigger, false);
+    });
+  }
+
+  function supportsNativeJxl() {
+    return new Promise<boolean>((resolve) => {
+      // Cache the verdict per tab session: browsers without native support
+      // fail the probe in a few ms, but browsers WITH support must download
+      // and decode it — re-racing the timeout on every page load is how the
+      // button flickers on in Safari over slow connections.
+      let cached: string | null = null;
+      try {
+        cached = window.sessionStorage.getItem('jxl-native');
+      } catch {}
+      if (cached !== null) return resolve(cached === '1');
+
+      const probe = new Image();
+      let settled = false;
+      const finish = (supported: boolean, remember: boolean) => {
+        if (settled) return;
+        settled = true;
+        if (remember) {
+          try {
+            window.sessionStorage.setItem('jxl-native', supported ? '1' : '0');
+          } catch {}
+        }
+        resolve(supported);
+      };
+
+      probe.onload = () => finish(true, true);
+      probe.onerror = () => finish(false, true);
+      // Safari can natively decode JXL files but does not accept the compact
+      // hand-crafted data-URL probe used here previously. Keep this detached
+      // so JXL.js cannot intercept it, and use a tiny (~0.5 KB) conventional
+      // cjxl-encoded file so slow networks cannot blow the deadline the way
+      // the previous 46 KB probe could. A timeout is not remembered — it says
+      // nothing about the browser, only about the connection.
+      probe.src = '/images/jxl-probe.jxl';
+      window.setTimeout(() => finish(false, false), 4000);
+    });
+  }
+
+  async function showJxlDecoderInfoWhenNeeded() {
+    if (!document.documentElement.hasAttribute('data-jxl-wasm-fallback') || !jxlDecoderInfos.length) return;
+    if (!(await supportsNativeJxl())) jxlDecoderInfos.forEach((info) => (info.hidden = false));
   }
 
   desktopItems.forEach((item) => {
@@ -261,6 +348,14 @@
       requestAnimationFrame(() => {
         if (!item.contains(document.activeElement)) setDesktopMenu(item, false);
       });
+    });
+  });
+
+  jxlDecoderTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const willOpen = trigger.getAttribute('aria-expanded') !== 'true';
+      closeJxlDecoderMessages(trigger);
+      setJxlDecoderMessage(trigger, willOpen);
     });
   });
 
@@ -314,6 +409,7 @@
     }
 
     if (!desktopItems.some((item) => item.contains(event.target as Node))) closeDesktopMenus();
+    if (!jxlDecoderInfos.some((info) => info.contains(event.target as Node))) closeJxlDecoderMessages();
   });
 
   document.addEventListener('keydown', (event) => {
@@ -335,9 +431,11 @@
 
     if (event.key === 'Escape') {
       closeDesktopMenus();
+      closeJxlDecoderMessages();
       if (mobileMenu && !mobileMenu.hidden) setMobileMenu(false, true);
     }
   });
 
   mobileMedia.addEventListener('change', () => setMobileMenu(false));
+  showJxlDecoderInfoWhenNeeded();
 </script>

@@ -20,6 +20,7 @@ type Props = {
   keywords?: string;
   author?: string;
   footerVariant?: 'compact' | 'full';
+  usesJxlWasmFallback?: boolean;
 };
 
 const {
@@ -31,6 +32,7 @@ const {
   keywords,
   author,
   footerVariant = 'compact',
+  usesJxlWasmFallback = false,
 } = Astro.props;
 
 // Resolve against the configured `site` so pages don't repeat the origin.
@@ -41,7 +43,7 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-jxl-wasm-fallback={usesJxlWasmFallback ? '' : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />

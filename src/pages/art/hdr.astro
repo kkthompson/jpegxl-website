@@ -7,9 +7,12 @@ const description = "HDR JXL art with links to source. Separate page to avoid SD
 const canonical = "https://jpegxl.info/art/hdr.html";
 ---
 
-<BaseLayout title={title} description={description} canonical={canonical}>
+<BaseLayout title={title} description={description} canonical={canonical} usesJxlWasmFallback>
   <Fragment slot="head">
-    <!-- Local JXL.js fallback renderer for browsers without native JPEG XL support. -->
+    <!-- Local JXL.js fallback renderer for browsers without native JPEG XL support.
+         preferHdr: on HDR displays in Chromium, decode to a cICP-tagged PNG so the
+         art renders in true HDR instead of tone-mapped SDR. -->
+    <script is:inline>window.jxl = Object.assign({ preferHdr: true }, window.jxl);</script>
     <script is:inline src="/resources/jxl-mark-embedded.js"></script>
     <script is:inline src="/serviceworker.min.js"></script>
     <script is:inline src="/resources/jxl.min.js"></script>
@@ -21,7 +24,7 @@ const canonical = "https://jpegxl.info/art/hdr.html";
             <h1 class="display-xl-bold fill-gradient">JXL Art (HDR)</h1>
           </div>
           <div class="wrapper-text width-small">
-            <h2 class="text-l-medium large">HDR pieces from the <a href="https://jxl-art.lucaversari.it/">JXL Art</a> tool, on a separate page so SDR and HDR are not mixed.</h2>
+            <h2 class="text-l-medium large">HDR pieces from the <a href="https://jxl-art.lucaversari.it/">JXL Art</a> tool.</h2>
           </div>
         </div>
         <div class="container-wave-animated">

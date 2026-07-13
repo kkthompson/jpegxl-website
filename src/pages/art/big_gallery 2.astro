@@ -7,7 +7,7 @@ const description = "JXL art gallery with links to source code. Procedural image
 const canonical = "https://jpegxl.info/art/big_gallery.html";
 ---
 
-<BaseLayout title={title} description={description} canonical={canonical}>
+<BaseLayout title={title} description={description} canonical={canonical} usesJxlWasmFallback>
   <Fragment slot="head">
     <!-- Local JXL.js fallback renderer for browsers without native JPEG XL support. -->
     <script is:inline src="/serviceworker.min.js?v=1.0.3-art-data"></script>

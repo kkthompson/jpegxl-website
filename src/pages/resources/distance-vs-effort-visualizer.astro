@@ -5,7 +5,7 @@ import '../../styles/distance-vs-effort.css';
 const title = 'Distance vs Effort Visualizer – JPEG XL';
 const description = 'Compare codecs by perceptual distance and encoding effort.';
 ---
-<BaseLayout title={title} description={description} canonical="https://jpegxl.info/resources/distance-vs-effort-visualizer.html">
+<BaseLayout title={title} description={description} canonical="https://jpegxl.info/resources/distance-vs-effort-visualizer.html" usesJxlWasmFallback>
   <Fragment slot="head">
     <!-- JXL.js fallback renderer for browsers without native JPEG XL support.
          The service worker supplies COOP/COEP headers when the host does not. -->

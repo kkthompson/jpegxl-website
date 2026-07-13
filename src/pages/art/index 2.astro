@@ -7,7 +7,7 @@ const description =
 const canonical = 'https://jpegxl.info/art/';
 ---
 
-<BaseLayout title={title} description={description} canonical={canonical}>
+<BaseLayout title={title} description={description} canonical={canonical} usesJxlWasmFallback>
   <Fragment slot="head">
     <!-- Local JXL.js fallback renderer for browsers without native JPEG XL support. -->
     <script is:inline src="/serviceworker.min.js?v=1.0.3-art-data"></script>
@@ -247,22 +247,6 @@ const canonical = 'https://jpegxl.info/art/';
         margin-bottom: 1rem;
       }
 
-      .art-jxl-notice {
-        background: rgba(26, 229, 224, 0.08);
-        border: 1px solid rgba(26, 229, 224, 0.25);
-        border-radius: 12px;
-        color: rgba(255, 255, 255, 0.82);
-        font-size: 1rem;
-        margin: 0 0 1.5rem;
-        padding: 0.85rem 1.1rem;
-        text-align: center;
-        text-wrap: balance;
-      }
-
-      .art-jxl-notice[hidden] {
-        display: none;
-      }
-
       .art-body code {
         background: rgba(26, 229, 224, 0.15);
         border-radius: 3px;
@@ -334,10 +318,6 @@ const canonical = 'https://jpegxl.info/art/';
         <div class="container-content-vflex centered">
           <div class="wrapper-content centered">
             <div class="art-body">
-              <p id="jxl-decoder-notice" class="art-jxl-notice" hidden>
-                Your browser doesn&rsquo;t support JXL natively, so we&rsquo;re using a local WebAssembly decoder that will be slower than native rendering.
-              </p>
-
               <h2>JXL?</h2>
               <p><a href="/index.html">JPEG XL</a> (aka JXL) is a next-gen image codec designed to replace JPEG and PNG.</p>
 
@@ -409,28 +389,4 @@ const canonical = 'https://jpegxl.info/art/';
       </div>
     </section>
   </main>
-
-  <script is:inline>
-    (function () {
-      var notice = document.getElementById('jxl-decoder-notice');
-      if (!notice) return;
-
-      function showIfNoNativeSupport() {
-        var img = new Image();
-        img.onload = function () {
-          if (img.width !== 1) notice.hidden = false;
-        };
-        img.onerror = function () {
-          notice.hidden = false;
-        };
-        img.src = 'data:image/jxl;base64,/woIAAAMABKIAgC4AF3lEgA=';
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', showIfNoNativeSupport);
-      } else {
-        showIfNoNativeSupport();
-      }
-    })();
-  </script>
 </BaseLayout>

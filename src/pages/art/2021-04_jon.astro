@@ -7,7 +7,7 @@ const description = "JXL Art by Jon Sneyers, created in 2021.";
 const canonical = "https://jpegxl.info/art/2021-04_jon.html";
 ---
 
-<BaseLayout title={title} description={description} canonical={canonical}>
+<BaseLayout title={title} description={description} canonical={canonical} usesJxlWasmFallback>
   <Fragment slot="head">
     <!-- Local JXL.js fallback renderer for browsers without native JPEG XL support. -->
     <script is:inline src="/resources/jxl-mark-embedded.js"></script>
