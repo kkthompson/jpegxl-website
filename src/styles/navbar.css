@@ -245,6 +245,12 @@ nav.scrolled .navbar_logo-link.w--current {
   margin-left: 0.25rem;
 }
 
+/* display: flex above would otherwise override the browser's built-in
+   [hidden] -> display: none, making the decoder info show on every page. */
+.navbar-jxl-decoder-info[hidden] {
+  display: none;
+}
+
 .navbar-jxl-decoder-info button {
   display: grid;
   place-items: center;
