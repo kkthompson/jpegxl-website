@@ -7,6 +7,7 @@ type Props = {
 
 const { title, subtitle, class: className = '' } = Astro.props;
 const heroClass = ['section-hero', 'hero-fullspan-graphic', 'gradient-bottom', className].filter(Boolean).join(' ');
+import Wave from './Wave.astro';
 ---
 
 <section id="main-content" class={heroClass}>
@@ -20,8 +21,7 @@ const heroClass = ['section-hero', 'hero-fullspan-graphic', 'gradient-bottom', c
   </div>
   <div class="container-wave-animated">
     <div class="wrapper-content-wave centered align-middle height-cropped-width-full">
-      <img src="/images/Ripple-Line2x-50.0s-2560px-371px.svg" loading="lazy" alt="" class="image-wave-2560" />
-      <img src="/images/Ripple-Line2x-50.0s-1440px-300px.svg" loading="lazy" alt="" class="image-wave-1440" />
+      <Wave />
     </div>
   </div>
 </section>

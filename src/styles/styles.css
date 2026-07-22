@@ -1545,6 +1545,19 @@ blockquote {
   position: relative;
 }
 
+.wave-picture {
+  z-index: -5;
+  width: 100%;
+  display: block;
+  position: relative;
+}
+
+.image-wave {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .container-2col-span-text {
   grid-column-gap: 16px;
   grid-row-gap: 16px;
