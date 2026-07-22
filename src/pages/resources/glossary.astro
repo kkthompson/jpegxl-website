@@ -50,7 +50,7 @@ const grouped = subcategories.map((subcategory) => ({
         opacity: 1;
         transition: opacity 0.3s ease-in-out;
         padding: 20px;
-        background: #1e1e1e;
+        background: var(--surface--elevated);
         border-radius: 10px;
         margin-top: 20px;
         width: 100%;
@@ -69,18 +69,18 @@ const grouped = subcategories.map((subcategory) => ({
         font-size: 1.2em;
         font-weight: 500;
         cursor: pointer;
-        color: #fff;
+        color: var(--white);
       }
       .definition {
         margin-top: 5px;
         padding: 10px;
       }
       .glossary-content a {
-        color: #4da6ff;
+        color: var(--text--color--link);
         text-decoration: none;
       }
       .glossary-content a:hover {
-        color: #80bfff;
+        color: var(--text--color--link-hover);
       }
       .dropdown {
         display: none;
@@ -96,8 +96,8 @@ const grouped = subcategories.map((subcategory) => ({
         border: 0;
         border-radius: 50px;
         appearance: none;
-        background-color: #494b50;
-        color: #fff;
+        background-color: var(--line-divider);
+        color: var(--white);
         cursor: pointer;
         text-align: center;
         text-align-last: center;
@@ -109,7 +109,7 @@ const grouped = subcategories.map((subcategory) => ({
         right: 15px;
         transform: translateY(-50%);
         pointer-events: none;
-        color: #fff;
+        color: var(--white);
       }
       @media (max-width: 800px) {
         .category-tabs {
