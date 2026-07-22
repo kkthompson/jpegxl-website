@@ -36,7 +36,15 @@ export function initCategoryTabs({ tabList, panels, select, onChange }: Category
 
     // Measure with the tabs visible; hiding them would make the next measurement zero-width.
     control.classList.remove('is-compact');
-    control.classList.toggle('is-compact', tabList.scrollWidth > tabList.clientWidth + 1);
+    const parent = control.parentElement;
+    const parentRect = parent?.getBoundingClientRect();
+    const viewportWidth = document.documentElement.clientWidth;
+    const visibleParentWidth = parentRect
+      ? Math.max(0, Math.min(parentRect.right, viewportWidth) - Math.max(parentRect.left, 0))
+      : tabList.clientWidth;
+    const availableWidth = Math.min(parent?.clientWidth ?? tabList.clientWidth, visibleParentWidth);
+    const tabsWidth = tabs.reduce((width, tab) => width + tab.offsetWidth, 0);
+    control.classList.toggle('is-compact', tabsWidth > availableWidth + 1);
   };
 
   const activate = (index: number, options: ActivateOptions = {}) => {
@@ -99,6 +107,7 @@ export function initCategoryTabs({ tabList, panels, select, onChange }: Category
   );
   activate(initialIndex, { animate: false, source: 'initial' });
   requestAnimationFrame(updateCompactMode);
+  document.fonts?.ready.then(updateCompactMode);
 
   const resizeObserver = control ? new ResizeObserver(updateCompactMode) : null;
   if (control?.parentElement) resizeObserver?.observe(control.parentElement);

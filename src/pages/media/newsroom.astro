@@ -158,24 +158,24 @@ const tagSections = [
         padding-bottom: 20px;
       }
       .news-item-heading-link {
-        text-decoration: none;
-        color: var(--brand--teal-bright--500);
-        display: inline-block;
+        display: block;
         margin-top: 1.5em;
+        color: var(--brand--teal-bright--500);
+        text-decoration: none;
       }
       .news-item-heading-link:hover {
         color: var(--brand--blue--500);
-      }
-      .news-item-heading-link .news-item-title {
-        color: inherit;
       }
       .news-item:first-child .news-item-heading-link {
         margin-top: 0;
       }
       .news-item-title {
+        margin: 0 0 0.25em;
+        color: inherit;
         font-size: 1.2em;
         font-weight: 500;
-        margin-bottom: 0.25em;
+        letter-spacing: -0.015em;
+        text-wrap: pretty;
       }
       .news-item-byline {
         font-size: 0.85em;
@@ -216,9 +216,9 @@ const tagSections = [
       .filter-tag-chip {
         appearance: none;
         font-size: 0.7em;
-        padding: 1px 6px;
+        padding: 2px 7px;
         background: color-mix(in srgb, var(--brand--teal-bright--500) 15%, transparent);
-        border: 1px solid color-mix(in srgb, var(--brand--teal-bright--500) 35%, transparent);
+        border: 0;
         border-radius: 10px;
         color: color-mix(in srgb, var(--text--color--text-white) 90%, transparent);
         cursor: pointer;
@@ -228,6 +228,9 @@ const tagSections = [
         text-decoration: none;
         display: inline-block;
         line-height: 1.2;
+      }
+      .filter-tag-chip {
+        border: 1px solid color-mix(in srgb, var(--brand--teal-bright--500) 35%, transparent);
       }
       .news-item-tag:hover,
       .tag-menu-tags button:hover {
@@ -369,6 +372,7 @@ const tagSections = [
           flex: 0 0 auto;
           width: 100%;
           max-width: 100%;
+          margin: 0 0 16px;
           border: 1px solid color-mix(in srgb, var(--brand--teal-bright--500) 30%, transparent);
           border-radius: 10px;
           padding: 12px;
@@ -701,6 +705,22 @@ const tagSections = [
       else if (tagLink) setFilter(tagLink.dataset.tag!, null, null);
     });
 
+    const layout = document.querySelector<HTMLElement>('.newsroom-layout')!;
+    const newsroomMain = document.querySelector<HTMLElement>('.newsroom-main')!;
+    const tagSidebar = document.getElementById('tag-sidebar')!;
+    const narrowLayout = window.matchMedia('(max-width: 900px)');
+
+    function placeTagFilter() {
+      if (narrowLayout.matches) {
+        content.parentElement!.insertBefore(tagSidebar, content);
+      } else {
+        layout.insertBefore(tagSidebar, newsroomMain);
+      }
+    }
+
+    placeTagFilter();
+    narrowLayout.addEventListener('change', placeTagFilter);
+
     // Sidebar tag menu.
     const tagMenuToggle = document.querySelector<HTMLButtonElement>('#tag-menu-toggle');
     tagMenuToggle?.addEventListener('click', () => {
@@ -708,7 +728,7 @@ const tagSections = [
       tagMenuToggle.setAttribute('aria-expanded', String(!expanded));
     });
 
-    document.getElementById('tag-sidebar')!.addEventListener('click', (event) => {
+    tagSidebar.addEventListener('click', (event) => {
       const link = (event.target as HTMLElement).closest<HTMLElement>('[data-tag]');
       if (!link) return;
       event.preventDefault();

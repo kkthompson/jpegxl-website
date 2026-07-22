@@ -63,18 +63,42 @@ const grouped = subcategories.map((subcategory) => ({
         opacity: 0;
       }
       .glossary-term {
-        margin-bottom: 20px;
+        margin: 0;
         width: 100%;
+      }
+      .glossary-term + .glossary-term {
+        border-top: 1px solid var(--line-divider);
       }
       .term {
         font-size: 1.2em;
         font-weight: 500;
+        margin: 0;
+        padding: 1.25em 0 0.75em;
         cursor: pointer;
-        color: var(--white);
+        color: var(--brand--teal-bright--P3--700);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        list-style: none;
+      }
+      .term::-webkit-details-marker {
+        display: none;
       }
       .definition {
-        margin-top: 5px;
-        padding: 10px;
+        margin-top: 0;
+        margin-bottom: 1.5em;
+        padding-bottom: 1.5em;
+        color: var(--text--color--text-white);
+        font-size: 1.125rem;
+        font-weight: 300;
+        text-wrap: pretty;
+      }
+      .definition :first-child {
+        margin-top: 0;
+      }
+      .definition :last-child {
+        margin-bottom: 0;
       }
       .glossary-content a {
         color: var(--text--color--link);
@@ -82,6 +106,42 @@ const grouped = subcategories.map((subcategory) => ({
       }
       .glossary-content a:hover {
         color: var(--text--color--link-hover);
+      }
+      .term a,
+      .term a:hover {
+        color: inherit;
+      }
+      .disclosure-icon {
+        display: inline-flex;
+        width: 20px;
+        height: 20px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: var(--brand--blue--P3--500);
+        transition: transform 0.3s ease, background-color 0.3s ease;
+      }
+      .disclosure-icon::before,
+      .disclosure-icon::after {
+        position: absolute;
+        content: '';
+        background-color: var(--white);
+        transition: transform 0.3s ease;
+      }
+      .disclosure-icon::before {
+        width: 2px;
+        height: 10px;
+      }
+      .disclosure-icon::after {
+        width: 10px;
+        height: 2px;
+      }
+      .glossary-term details[open] .disclosure-icon {
+        transform: rotate(180deg);
+        background-color: var(--brand--teal-bright--P3--500);
+      }
+      .glossary-term details[open] .disclosure-icon::before {
+        transform: rotate(90deg);
       }
     </style>
   </Fragment>
@@ -120,6 +180,7 @@ const grouped = subcategories.map((subcategory) => ({
                             <a id={termId(item.term)} href={`#${termId(item.term)}`}>
                               {item.term}
                             </a>
+                            <span class="disclosure-icon" aria-hidden="true"></span>
                           </summary>
                           <div class="definition" set:html={item.definition} />
                         </details>
