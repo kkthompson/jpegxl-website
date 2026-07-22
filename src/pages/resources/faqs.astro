@@ -108,11 +108,35 @@ const faqJsonLd = {
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
     <style is:inline>
+      html {
+        overflow-y: scroll;
+        scrollbar-gutter: stable;
+      }
       .wrapper {
-        text-align: center;
-        margin: 20px 0;
+        width: 100%;
+      }
+      .resource-tab-layout {
+        display: grid;
+        grid-template-columns: minmax(11rem, 13rem) minmax(0, 1fr);
+        gap: clamp(1.5rem, 4vw, 3.5rem);
+        align-items: start;
+        width: 100%;
+      }
+      .resource-tab-layout > :last-child,
+      .code-faqs {
+        width: 100%;
+        min-width: 0;
+      }
+      .resource-tab-rail {
+        position: sticky;
+        top: 1.5rem;
+        padding: 0.75rem;
+        border: 1px solid color-mix(in srgb, var(--brand--teal-bright--500) 24%, var(--line-divider));
+        border-radius: var(--radius--small);
+        background: color-mix(in srgb, var(--page-black) 65%, transparent);
       }
       .tab-content {
+        box-sizing: border-box;
         padding: 20px;
         background: #1e1e1e;
         border-radius: 10px;
@@ -129,17 +153,18 @@ const faqJsonLd = {
         border-top: 1px solid var(--line-divider);
       }
       .text-question-faq {
-        font-size: 1.2em;
-        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
         margin: 0;
         padding: 1.25em 0 0.75em;
-        color: var(--white);
         cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
         list-style: none;
+      }
+      .text-question-faq > :first-child {
+        min-width: 0;
+        flex: 1 1 auto;
       }
       .text-question-faq::-webkit-details-marker {
         display: none;
@@ -266,6 +291,8 @@ const faqJsonLd = {
         display: inline-flex;
         justify-content: center;
         align-items: center;
+        flex: 0 0 20px;
+        position: relative;
         transition:
           transform 0.3s ease,
           background-color 0.3s ease;
@@ -309,6 +336,18 @@ const faqJsonLd = {
       .faq-updated-footer span + span::before {
         content: ' · ';
       }
+      @media (max-width: 767px) {
+        .resource-tab-layout {
+          display: block;
+        }
+        .resource-tab-rail {
+          position: static;
+          margin-bottom: 1.25rem;
+          padding: 0;
+          border: 0;
+          background: transparent;
+        }
+      }
     </style>
   </Fragment>
 
@@ -321,13 +360,16 @@ const faqJsonLd = {
       <div class="container-content-vflex">
         <div class="wrapper-content centered">
           <div class="code-faqs w-embed">
-            <div class="wrapper">
-              <CategoryTabs
-                ariaLabel="FAQ categories"
-                categories={rendered.map(({ entry }) => ({ label: entry.data.title }))}
-                idPrefix="faq"
-              />
-            </div>
+            <div class="resource-tab-layout">
+              <aside class="resource-tab-rail">
+                <CategoryTabs
+                  ariaLabel="FAQ categories"
+                  categories={rendered.map(({ entry }) => ({ label: entry.data.title }))}
+                  idPrefix="faq"
+                  orientation="vertical"
+                />
+              </aside>
+              <div>
             {
               rendered.map(({ items }, i) => (
                 <div
@@ -361,6 +403,8 @@ const faqJsonLd = {
                 </footer>
               )
             }
+              </div>
+            </div>
           </div>
         </div>
       </div>

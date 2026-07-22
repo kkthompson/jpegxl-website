@@ -8,13 +8,20 @@ interface Props {
   ariaLabel: string;
   categories: Category[];
   idPrefix: string;
+  orientation?: 'horizontal' | 'vertical';
 }
 
-const { ariaLabel, categories, idPrefix } = Astro.props;
+const { ariaLabel, categories, idPrefix, orientation = 'horizontal' } = Astro.props;
 ---
 
-<div class="category-tabs-control">
-  <div class="category-tabs" id={`${idPrefix}-tabs`} role="tablist" aria-label={ariaLabel}>
+<div class:list={['category-tabs-control', `category-tabs-control--${orientation}`]}>
+  <div
+    class="category-tabs"
+    id={`${idPrefix}-tabs`}
+    role="tablist"
+    aria-label={ariaLabel}
+    data-orientation={orientation}
+  >
     <div class="selector"></div>
     {
       categories.map(({ label, count }, index) => (

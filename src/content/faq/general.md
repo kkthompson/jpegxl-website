@@ -1,7 +1,7 @@
 ---
 title: General
 order: 1
-lastUpdated: July , 20246
+lastUpdated: July 22nd, 2026
 ---
 
 ### What is JPEG XL?

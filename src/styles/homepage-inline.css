@@ -551,6 +551,7 @@ main {
   clip-path: inset(0 calc(100% - var(--position)) 0 0);
   overflow: hidden;
   z-index: 2;
+  pointer-events: none;
 }
 
 .image1-before .slider-image {
@@ -564,6 +565,7 @@ main {
   width: 100%;
   height: 100%;
   margin: 0;
+  pointer-events: none;
 }
 
 .image1-after img {
@@ -699,10 +701,10 @@ main {
 
 .slider-button {
   position: absolute;
-  background-color: #ffffffa0;
+  background-color: #ffffff80;
   color: rgb(1, 1, 12);
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   border-radius: 100vw;
   display: grid;
   place-items: center;
@@ -984,6 +986,15 @@ main {
   z-index: 5;
 }
 
+/* While hovered, lift the tab bar's stacking context above .container-code
+   (z-index 30) so the data-tooltip bubbles clear the comparison image. In the
+   JPEG section the tab bar is a sibling of .container-code, so its resting
+   z-index of 5 would otherwise trap the bubbles beneath the image. */
+.tabs__sidebar:hover,
+.tabs__sidebar_AVIF:hover {
+  z-index: 40;
+}
+
 .tabs__button,
 .tabs__button_avif,
 .next_button {
@@ -1030,7 +1041,7 @@ main {
   opacity: 0;
   pointer-events: none;
   white-space: nowrap;
-  z-index: 20;
+  z-index: 40;
   transition: opacity 0.15s ease;
 }
 
@@ -1365,7 +1376,6 @@ main > .section-lossless-transcoding {
   margin-inline-start: calc((100% - min(896px, 100%)) / 2);
   margin-inline-end: auto;
   padding-inline: 0;
-  isolation: isolate;
 }
 
 .section-jpeg-comparison .comparison-container,
@@ -1472,7 +1482,7 @@ main > .section-lossless-transcoding {
   flex: 1 1 0;
   min-width: 0;
   font-size: clamp(0.5625rem, 2.6vw, 0.75rem);
-  padding: 0.2rem clamp(0.2rem, 1.5vw, 0.6rem);
+  padding: 0.3rem clamp(0.3rem, 1.5vw, 0.6rem);
   margin-inline: clamp(0.08rem, 0.4vw, 0.4rem);
   letter-spacing: clamp(0.01rem, 0.04vw, 0.025rem);
   white-space: normal;
@@ -1524,6 +1534,7 @@ main > .section-lossless-transcoding {
   height: auto;
   width: min(100%, 327px);
   min-height: 5rem;
+  margin-top: clamp(-1.5rem, -2vw, -0.75rem);
 }
 
 /* Drop the legacy 4rem top margin on the inner range inputs — that gap was

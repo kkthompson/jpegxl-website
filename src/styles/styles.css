@@ -1517,7 +1517,7 @@ blockquote {
   justify-content: center;
   align-self: center;
   align-items: flex-start;
-  width: 200px;
+  width: clamp(6rem, calc(17.7vw - 0.3rem), 15.625rem);
   height: auto;
   text-decoration: none;
   display: flex;
@@ -1916,13 +1916,14 @@ blockquote {
   padding: 3rem;
 }
 
-.text-question-faq {
+.text-question-faq,
+.term {
   color: var(--brand--teal-bright--P3--700);
-  letter-spacing: -.01em;
+  letter-spacing: -.015em;
   font-family: var(--font--font-family--barlow);
-  font-size: 1.5rem;
-  font-weight: 500;
-  line-height: 31px;
+  font-size: clamp(1.125rem, calc(1.027rem + .423vw), 1.5rem);
+  font-weight: 400;
+  line-height: 105%;
 }
 
 .container-content-vflex {
@@ -4277,7 +4278,6 @@ blockquote {
 
   .logo-home-large {
     border-radius: var(--radius--xxlarge);
-    width: 250px;
     height: auto;
     position: relative;
     inset: 0%;
@@ -4575,12 +4575,6 @@ blockquote {
     letter-spacing: .01em;
     font-size: 1em;
     font-weight: 700;
-  }
-
-  .text-question-faq {
-    color: var(--brand--teal-bright--P3--700);
-    font-size: 1.5rem;
-    line-height: 1.45;
   }
 
   .container-content-vflex {
@@ -5069,10 +5063,6 @@ blockquote {
     padding-left: 40px;
   }
 
-  .logo-home-large {
-    width: 160px;
-  }
-
   .section-jpeg-xl-hero {
     padding-top: 0;
     padding-bottom: 0;
@@ -5175,10 +5165,6 @@ blockquote {
   .label-menu-text {
     white-space: nowrap;
     font-size: 1em;
-  }
-
-  .text-question-faq {
-    line-height: 1.45em;
   }
 
   .container-content-vflex {
@@ -5982,11 +5968,6 @@ blockquote {
     padding-right: 4em;
   }
 
-  .logo-home-large {
-    width: 120px;
-    height: auto;
-  }
-
   .section-jpeg-xl-hero {
     padding-top: 0;
     padding-bottom: 0;
@@ -6618,11 +6599,6 @@ blockquote {
   }
 
   .body {
-    height: auto;
-  }
-
-  .logo-home-large {
-    width: 80px;
     height: auto;
   }
 

@@ -212,15 +212,14 @@ const tagSections = [
         gap: 4px;
       }
       .news-item-tag,
-      .tag-menu-tags button,
-      .filter-tag-chip {
+      .tag-menu-tags button {
         appearance: none;
-        font-size: 0.7em;
-        padding: 2px 7px;
+        font-size: 0.75rem;
+        padding: .25rem .75rem;
         background: color-mix(in srgb, var(--brand--teal-bright--500) 15%, transparent);
         border: 0;
         border-radius: 10px;
-        color: color-mix(in srgb, var(--text--color--text-white) 90%, transparent);
+        color: var(--text--color--text-white);
         cursor: pointer;
         font-family: inherit;
         font-weight: inherit;
@@ -228,9 +227,6 @@ const tagSections = [
         text-decoration: none;
         display: inline-block;
         line-height: 1.2;
-      }
-      .filter-tag-chip {
-        border: 1px solid color-mix(in srgb, var(--brand--teal-bright--500) 35%, transparent);
       }
       .news-item-tag:hover,
       .tag-menu-tags button:hover {
@@ -242,57 +238,6 @@ const tagSections = [
       .tag-menu-tags button:focus-visible {
         outline: 2px solid var(--brand--blue--P3--400);
         outline-offset: 2px;
-      }
-      .filter-bar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-      .filter-box-outer {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        height: 40px;
-        clip-path: polygon(5% 0, 95% 0, 90% 100%, 10% 100%);
-        background: color-mix(in srgb, var(--brand--teal-bright--500) 40%, transparent);
-      }
-      .filter-box {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        height: 38px;
-        margin: 1px;
-        padding: 0 44px 0 32px;
-        clip-path: polygon(5% 0, 95% 0, 90% 100%, 10% 100%);
-        background: color-mix(in srgb, var(--page-black) 95%, transparent);
-        box-sizing: border-box;
-      }
-      .filter-tag-label {
-        font-size: 15px;
-        line-height: 1.2;
-        color: color-mix(in srgb, var(--text--color--text-white) 80%, transparent);
-      }
-      .filter-tag-chip {
-        font-size: 15px;
-      }
-      .filter-tag-clear {
-        position: absolute;
-        top: 0;
-        right: 22px;
-        background: none;
-        border: 0;
-        color: color-mix(in srgb, var(--text--color--text-white) 95%, transparent);
-        cursor: pointer;
-        padding: 0;
-        font-size: 22px;
-        line-height: 1;
-        font-weight: 300;
-      }
-      .filter-tag-clear:hover {
-        color: var(--base--white);
       }
       .tab-count {
         opacity: 0.85;
@@ -318,17 +263,98 @@ const tagSections = [
       }
       .newsroom-sidebar {
         grid-column: 1;
+        align-self: start;
         justify-self: center;
         width: 220px;
+        height: fit-content;
         position: sticky;
         top: 24px;
+        box-sizing: border-box;
+        padding: 0.75rem;
+        border: 1px solid color-mix(in srgb, var(--brand--teal-bright--500) 24%, var(--line-divider));
+        border-radius: var(--radius--small);
+        background: color-mix(in srgb, var(--page-black) 65%, transparent);
+      }
+      .newsroom-sidebar .category-tabs-control {
+        margin-bottom: 0;
+        padding-bottom: 0;
       }
       .newsroom-main {
         grid-column: 2;
         min-width: 0;
       }
+      .tag-filter-panel {
+        margin: 0 0 1.25rem;
+        padding-inline: 20px;
+      }
+      .tag-filter-heading {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid color-mix(in srgb, var(--white) 55%, transparent);
+        border-radius: 100px;
+        background: rgba(48, 54, 62, 0.42);
+        -webkit-backdrop-filter: blur(10px) saturate(125%);
+        backdrop-filter: blur(10px) saturate(125%);
+      }
       .tag-menu-header {
-        display: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: 0.55rem 1.25rem;
+        border: 0;
+        border-radius: 100px;
+        background: transparent;
+        color: var(--white);
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        user-select: none;
+      }
+      .tag-menu-header .tag-menu-arrow {
+        display: inline-block;
+        margin-left: 0;
+        font-size: 0.7em;
+        opacity: 0.8;
+        transition: transform 0.2s ease;
+      }
+      .tag-menu-header:focus-visible {
+        outline: 2px solid var(--brand--blue--P3--400);
+        outline-offset: 4px;
+      }
+      .tag-menu-header[aria-expanded='true'] .tag-menu-arrow {
+        transform: rotate(-180deg);
+      }
+      .filter-tag-clear {
+        position: absolute;
+        top: 50%;
+        appearance: none;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: color-mix(in srgb, var(--text--color--text-white) 85%, transparent);
+        cursor: pointer;
+        font-size: 1.5rem;
+        line-height: 1;
+        transform: translateY(-50%);
+      }
+      .filter-tag-clear:hover {
+        color: var(--white);
+      }
+      .tag-menu-content {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        padding-top: 0;
+        transition: max-height 0.35s ease, opacity 0.2s ease, padding-top 0.35s ease;
+      }
+      .tag-filter-panel.is-open .tag-menu-content {
+        max-height: 100rem;
+        opacity: 1;
+        padding-top: 1rem;
       }
       .tag-menu-section {
         margin-bottom: 1rem;
@@ -373,45 +399,19 @@ const tagSections = [
           width: 100%;
           max-width: 100%;
           margin: 0 0 16px;
-          border: 1px solid color-mix(in srgb, var(--brand--teal-bright--500) 30%, transparent);
-          border-radius: 10px;
-          padding: 12px;
-          background: color-mix(in srgb, var(--page-black) 60%, transparent);
-        }
-        .tag-menu-header[aria-expanded='true'] + .tag-menu-content {
-          display: block;
-        }
-        .tag-menu-content {
-          display: none;
-        }
-        .tag-menu-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          width: 100%;
           padding: 0;
           border: 0;
+          border-radius: 0;
           background: transparent;
-          cursor: pointer;
-          font-family: inherit;
-          font-size: 0.9rem;
-          font-weight: 600;
-          color: color-mix(in srgb, var(--brand--teal-bright--500) 95%, transparent);
-          user-select: none;
         }
-        .tag-menu-header .tag-menu-arrow {
-          display: inline-block;
-          margin-left: 6px;
-          font-size: 0.7em;
-          opacity: 0.8;
-          transition: transform 0.2s ease;
+        .newsroom-sidebar .category-tabs-control {
+          margin-bottom: 0;
+          padding-bottom: 0;
         }
-        .tag-menu-header:focus-visible {
-          outline: 2px solid var(--brand--blue--P3--400);
-          outline-offset: 4px;
-        }
-        .tag-menu-header[aria-expanded='true'] .tag-menu-arrow {
-          transform: rotate(-180deg);
+      }
+      @media (max-width: 767px) {
+        .newsroom-sidebar {
+          padding-inline: 20px;
         }
       }
     </style>
@@ -426,68 +426,50 @@ const tagSections = [
     <main class="container-content-vflex width-page-max centered">
       <div class="wrapper-content">
         <div class="newsroom-layout">
-          <aside class="newsroom-sidebar" id="tag-sidebar" aria-label="Filter by tag">
-            <button
-              type="button"
-              id="tag-menu-toggle"
-              class="tag-menu-header"
-              aria-expanded="false"
-              aria-controls="tag-menu-content"
-            >
-              Filter by tag<span class="tag-menu-arrow" aria-hidden="true">▼</span>
-            </button>
-            <div id="tag-menu-content" class="tag-menu-content">
-              {
-                tagSections.map((section) => (
-                  <div class="tag-menu-section">
-                    <div class="tag-menu-section-title">{section.title}</div>
-                    <div class="tag-menu-tags">
-                      {section.tags.map((tag) => {
-                        const tagValue = typeof tag === 'string' ? tag : tag.value;
-                        const tagLabel = typeof tag === 'string' ? tag : tag.label;
-                        return (
-                          <button type="button" data-tag={tagValue}>
-                            {tagLabel}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))
-              }
-            </div>
+          <aside class="newsroom-sidebar" aria-label="Article categories">
+            <CategoryTabs
+              ariaLabel="Article categories"
+              categories={newsCategories.map(({ category, items }) => ({
+                label: category,
+                count: items.length,
+              }))}
+              idPrefix="news"
+              orientation="vertical"
+            />
           </aside>
           <div class="newsroom-main">
             <div class="code-tab_menu-animated w-embed">
-              <div class="wrapper">
-                <div class="filter-and-tabs">
-                  <div class="filter-bar" id="filter-bar" style="display: none;">
-                    <div class="filter-box-outer">
-                      <div class="filter-box">
-                        <button
-                          type="button"
-                          class="filter-tag-clear"
-                          id="filter-clear"
-                          aria-label="Clear filter">&times;</button
-                        >
-                        <span class="filter-tag-label">Filter: </span>
-                        <span class="filter-tag-label" id="filter-type-label"></span>
-                        <span class="filter-tag-chip" id="filter-chip">
-                          <span id="filter-value"></span>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <CategoryTabs
-                    ariaLabel="News categories"
-                    categories={newsCategories.map(({ category, items }) => ({
-                      label: category,
-                      count: items.length,
-                    }))}
-                    idPrefix="news"
-                  />
+              <aside class="tag-filter-panel" id="tag-sidebar" aria-label="Filter by tag">
+                <div class="tag-filter-heading">
+                  <button
+                    type="button"
+                    id="tag-menu-toggle"
+                    class="tag-menu-header"
+                    aria-expanded="false"
+                    aria-controls="tag-menu-content"
+                  >
+                    <span id="tag-menu-label">Filter by tag</span>
+                    <span class="tag-menu-arrow" aria-hidden="true">▼</span>
+                  </button>
+                  <button type="button" class="filter-tag-clear" id="filter-clear" aria-label="Clear filter" hidden>&times;</button>
                 </div>
-              </div>
+                <div id="tag-menu-content" class="tag-menu-content">
+                  {
+                    tagSections.map((section) => (
+                      <div class="tag-menu-section">
+                        <div class="tag-menu-section-title">{section.title}</div>
+                        <div class="tag-menu-tags">
+                          {section.tags.map((tag) => {
+                            const tagValue = typeof tag === 'string' ? tag : tag.value;
+                            const tagLabel = typeof tag === 'string' ? tag : tag.label;
+                            return <button type="button" data-tag={tagValue}>{tagLabel}</button>;
+                          })}
+                        </div>
+                      </div>
+                    ))
+                  }
+                </div>
+              </aside>
               <div id="news-content" class="news-content">
                 {
                   newsCategories.map(({ category, items }, index) => (
@@ -635,22 +617,25 @@ const tagSections = [
     }
 
     function updateFilterBar() {
-      const bar = document.getElementById('filter-bar')!;
-      const typeEl = document.getElementById('filter-type-label')!;
-      const valueEl = document.getElementById('filter-value')!;
+      const label = document.getElementById('tag-menu-label')!;
+      const clear = document.getElementById('filter-clear')!;
       const active = currentTagFilter
-        ? ['tag = ', currentTagFilter]
+        ? ['tag', currentTagFilter]
         : currentAuthorFilter
-          ? ['author = ', currentAuthorFilter]
+          ? ['author', currentAuthorFilter]
           : currentPublicationFilter
-            ? ['publication = ', currentPublicationFilter]
+            ? ['publication', currentPublicationFilter]
             : null;
       if (active) {
-        bar.style.display = 'flex';
-        typeEl.textContent = active[0];
-        valueEl.textContent = active[1];
+        label.textContent = `Filter by ${active[0]}: ${active[1]}`;
+        clear.hidden = false;
+        requestAnimationFrame(() => {
+          clear.style.left = `${label.offsetLeft + label.offsetWidth + 8}px`;
+        });
       } else {
-        bar.style.display = 'none';
+        label.textContent = 'Filter by tag';
+        clear.hidden = true;
+        clear.style.removeProperty('left');
       }
     }
 
@@ -705,27 +690,14 @@ const tagSections = [
       else if (tagLink) setFilter(tagLink.dataset.tag!, null, null);
     });
 
-    const layout = document.querySelector<HTMLElement>('.newsroom-layout')!;
-    const newsroomMain = document.querySelector<HTMLElement>('.newsroom-main')!;
     const tagSidebar = document.getElementById('tag-sidebar')!;
-    const narrowLayout = window.matchMedia('(max-width: 900px)');
-
-    function placeTagFilter() {
-      if (narrowLayout.matches) {
-        content.parentElement!.insertBefore(tagSidebar, content);
-      } else {
-        layout.insertBefore(tagSidebar, newsroomMain);
-      }
-    }
-
-    placeTagFilter();
-    narrowLayout.addEventListener('change', placeTagFilter);
 
     // Sidebar tag menu.
     const tagMenuToggle = document.querySelector<HTMLButtonElement>('#tag-menu-toggle');
     tagMenuToggle?.addEventListener('click', () => {
       const expanded = tagMenuToggle.getAttribute('aria-expanded') === 'true';
       tagMenuToggle.setAttribute('aria-expanded', String(!expanded));
+      tagSidebar.classList.toggle('is-open', !expanded);
     });
 
     tagSidebar.addEventListener('click', (event) => {
@@ -733,8 +705,9 @@ const tagSections = [
       if (!link) return;
       event.preventDefault();
       setFilter(link.dataset.tag!, null, null);
-      if (tagMenuToggle && window.matchMedia('(max-width: 900px)').matches) {
+      if (tagMenuToggle) {
         tagMenuToggle.setAttribute('aria-expanded', 'false');
+        tagSidebar.classList.remove('is-open');
       }
     });
 

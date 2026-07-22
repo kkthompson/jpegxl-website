@@ -27,12 +27,21 @@ export function initCategoryTabs({ tabList, panels, select, onChange }: Category
 
   const setSelector = (tab: HTMLElement) => {
     if (!selector) return;
+    if (tabList.dataset.orientation === 'vertical') {
+      selector.style.width = '100%';
+      selector.style.height = `${tab.offsetHeight}px`;
+      selector.style.left = '0';
+      selector.style.top = `${tab.offsetTop}px`;
+      return;
+    }
     selector.style.width = `${tab.offsetWidth}px`;
+    selector.style.height = '100%';
     selector.style.left = `${tab.offsetLeft}px`;
+    selector.style.top = '0';
   };
 
   const updateCompactMode = () => {
-    if (!control) return;
+    if (!control || tabList.dataset.orientation === 'vertical') return;
 
     // Measure with the tabs visible; hiding them would make the next measurement zero-width.
     control.classList.remove('is-compact');
