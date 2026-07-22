@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryTabs from '../../components/CategoryTabs.astro';
 import PageHero from '../../components/PageHero.astro';
 import glossaryData from '../../data/glossary.json';
 import '../../styles/category-tabs.css';
@@ -82,43 +83,6 @@ const grouped = subcategories.map((subcategory) => ({
       .glossary-content a:hover {
         color: var(--text--color--link-hover);
       }
-      .dropdown {
-        display: none;
-        position: relative;
-        width: 100%;
-        max-width: 300px;
-        margin: 0 auto;
-      }
-      .dropdown select {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-        border: 0;
-        border-radius: 50px;
-        appearance: none;
-        background-color: var(--line-divider);
-        color: var(--white);
-        cursor: pointer;
-        text-align: center;
-        text-align-last: center;
-      }
-      .dropdown::after {
-        content: '\25BC';
-        position: absolute;
-        top: 50%;
-        right: 15px;
-        transform: translateY(-50%);
-        pointer-events: none;
-        color: var(--white);
-      }
-      @media (max-width: 800px) {
-        .category-tabs {
-          display: none;
-        }
-        .dropdown {
-          display: block;
-        }
-      }
     </style>
   </Fragment>
 
@@ -132,33 +96,11 @@ const grouped = subcategories.map((subcategory) => ({
         <div class="wrapper-content centered">
           <div class="w-embed">
             <div class="wrapper">
-              <div class="category-tabs" id="tab-bar" role="tablist" aria-label="Glossary categories">
-                <div class="selector"></div>
-                {
-                  grouped.map(({ subcategory }, index) => (
-                    <button
-                      type="button"
-                      id={`glossary-tab-${index}`}
-                      role="tab"
-                      aria-selected={index === 0 ? 'true' : 'false'}
-                      aria-controls={`glossary-panel-${index}`}
-                      data-index={index}
-                    >
-                      {subcategory}
-                    </button>
-                  ))
-                }
-              </div>
-              <div class="dropdown">
-                <label class="sr-only" for="category-dropdown">Glossary category</label>
-                <select id="category-dropdown">
-                  {
-                    grouped.map(({ subcategory }, index) => (
-                      <option value={index}>{subcategory}</option>
-                    ))
-                  }
-                </select>
-              </div>
+              <CategoryTabs
+                ariaLabel="Glossary categories"
+                categories={grouped.map(({ subcategory }) => ({ label: subcategory }))}
+                idPrefix="glossary"
+              />
             </div>
             <div id="glossary-content" class="glossary-content">
               {
@@ -195,15 +137,15 @@ const grouped = subcategories.map((subcategory) => ({
   <script>
     import { initCategoryTabs } from '../../scripts/category-tabs';
 
-    const tabList = document.querySelector<HTMLElement>('.category-tabs')!;
-    const dropdown = document.getElementById('category-dropdown') as HTMLSelectElement;
+    const tabList = document.getElementById('glossary-tabs')!;
+    const select = document.getElementById('glossary-select') as HTMLSelectElement;
     const content = document.getElementById('glossary-content')!;
     const panels = Array.from(content.querySelectorAll<HTMLElement>('.glossary-panel'));
     const categoryTabs = initCategoryTabs({
       tabList,
       panels,
-      onChange: ({ index, animate, showPanels }) => {
-        dropdown.value = String(index);
+      select,
+      onChange: ({ animate, showPanels }) => {
         if (!animate) {
           showPanels();
           return;
@@ -215,10 +157,6 @@ const grouped = subcategories.map((subcategory) => ({
         }, 300);
       },
     });
-
-    dropdown.addEventListener('change', () =>
-      categoryTabs.activate(parseInt(dropdown.value), { source: 'programmatic' }),
-    );
 
     // Clicking a term's link toggles its definition without moving the page.
     content.addEventListener('click', (e) => {

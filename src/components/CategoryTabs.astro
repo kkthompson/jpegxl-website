@@ -1,0 +1,40 @@
+---
+type Category = {
+  label: string;
+  count?: number;
+};
+
+interface Props {
+  ariaLabel: string;
+  categories: Category[];
+  idPrefix: string;
+}
+
+const { ariaLabel, categories, idPrefix } = Astro.props;
+---
+
+<div class="category-tabs-control">
+  <div class="category-tabs" id={`${idPrefix}-tabs`} role="tablist" aria-label={ariaLabel}>
+    <div class="selector"></div>
+    {
+      categories.map(({ label, count }, index) => (
+        <button
+          type="button"
+          id={`${idPrefix}-tab-${index}`}
+          role="tab"
+          aria-selected={index === 0 ? 'true' : 'false'}
+          aria-controls={`${idPrefix}-panel-${index}`}
+          data-index={index}
+        >
+          <span class="tab-label">{label}</span>
+          {count !== undefined && <span class="tab-count"> ({count})</span>}
+        </button>
+      ))
+    }
+  </div>
+
+  <label class="category-tabs-select-label" for={`${idPrefix}-select`}>{ariaLabel}</label>
+  <select class="category-tabs-select" id={`${idPrefix}-select`}>
+    {categories.map(({ label }, index) => <option value={index}>{label}</option>)}
+  </select>
+</div>

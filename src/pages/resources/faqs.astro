@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Marked, Renderer, marked } from 'marked';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryTabs from '../../components/CategoryTabs.astro';
 import PageHero from '../../components/PageHero.astro';
 import '../../styles/category-tabs.css';
 
@@ -321,31 +322,19 @@ const faqJsonLd = {
         <div class="wrapper-content centered">
           <div class="code-faqs w-embed">
             <div class="wrapper">
-              <div class="category-tabs" role="tablist" aria-label="FAQ categories">
-                <div class="selector"></div>
-                {
-                  rendered.map(({ entry }, i) => (
-                    <button
-                      type="button"
-                      id={`${entry.id}-tab`}
-                      role="tab"
-                      aria-selected={i === 0 ? 'true' : 'false'}
-                      aria-controls={`${entry.id}-panel`}
-                      data-tab={entry.id}
-                    >
-                      {entry.data.title}
-                    </button>
-                  ))
-                }
-              </div>
+              <CategoryTabs
+                ariaLabel="FAQ categories"
+                categories={rendered.map(({ entry }) => ({ label: entry.data.title }))}
+                idPrefix="faq"
+              />
             </div>
             {
-              rendered.map(({ entry, items }, i) => (
+              rendered.map(({ items }, i) => (
                 <div
-                  id={`${entry.id}-panel`}
+                  id={`faq-panel-${i}`}
                   class="tab-content"
                   role="tabpanel"
-                  aria-labelledby={`${entry.id}-tab`}
+                  aria-labelledby={`faq-tab-${i}`}
                   hidden={i !== 0}
                 >
                   {items.map((item) => (
@@ -381,11 +370,12 @@ const faqJsonLd = {
   <script>
     import { initCategoryTabs } from '../../scripts/category-tabs';
 
-    const tabsContainer = document.querySelector<HTMLElement>('.category-tabs')!;
+    const tabsContainer = document.getElementById('faq-tabs')!;
+    const select = document.getElementById('faq-select') as HTMLSelectElement;
     const tabContents = document.querySelectorAll<HTMLElement>('.tab-content');
     const copyButtons = document.querySelectorAll<HTMLButtonElement>('[data-copy-code]');
 
-    initCategoryTabs({ tabList: tabsContainer, panels: Array.from(tabContents) });
+    initCategoryTabs({ tabList: tabsContainer, panels: Array.from(tabContents), select });
 
     async function copyText(text: string) {
       await navigator.clipboard.writeText(text);

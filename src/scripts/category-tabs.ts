@@ -1,4 +1,4 @@
-export type TabActivationSource = 'initial' | 'keyboard' | 'pointer' | 'programmatic';
+export type TabActivationSource = 'initial' | 'keyboard' | 'pointer' | 'select' | 'programmatic';
 
 type TabChange = {
   index: number;
@@ -10,6 +10,7 @@ type TabChange = {
 type CategoryTabsOptions = {
   tabList: HTMLElement;
   panels: HTMLElement[];
+  select?: HTMLSelectElement | null;
   onChange?: (change: TabChange) => void;
 };
 
@@ -19,14 +20,23 @@ type ActivateOptions = {
   source?: TabActivationSource;
 };
 
-export function initCategoryTabs({ tabList, panels, onChange }: CategoryTabsOptions) {
+export function initCategoryTabs({ tabList, panels, select, onChange }: CategoryTabsOptions) {
   const tabs = Array.from(tabList.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
   const selector = tabList.querySelector<HTMLElement>('.selector');
+  const control = tabList.closest<HTMLElement>('.category-tabs-control');
 
   const setSelector = (tab: HTMLElement) => {
     if (!selector) return;
     selector.style.width = `${tab.offsetWidth}px`;
     selector.style.left = `${tab.offsetLeft}px`;
+  };
+
+  const updateCompactMode = () => {
+    if (!control) return;
+
+    // Measure with the tabs visible; hiding them would make the next measurement zero-width.
+    control.classList.remove('is-compact');
+    control.classList.toggle('is-compact', tabList.scrollWidth > tabList.clientWidth + 1);
   };
 
   const activate = (index: number, options: ActivateOptions = {}) => {
@@ -40,6 +50,7 @@ export function initCategoryTabs({ tabList, panels, onChange }: CategoryTabsOpti
       item.setAttribute('aria-selected', String(isSelected));
       item.tabIndex = isSelected ? 0 : -1;
     });
+    if (select) select.value = String(index);
     setSelector(tab);
 
     const showPanels = () => {
@@ -78,12 +89,21 @@ export function initCategoryTabs({ tabList, panels, onChange }: CategoryTabsOpti
     activate(nextIndex, { focus: true, source: 'keyboard' });
   });
 
+  select?.addEventListener('change', () => {
+    activate(Number(select.value), { source: 'select' });
+  });
+
   const initialIndex = Math.max(
     0,
     tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true'),
   );
   activate(initialIndex, { animate: false, source: 'initial' });
+  requestAnimationFrame(updateCompactMode);
+
+  const resizeObserver = control ? new ResizeObserver(updateCompactMode) : null;
+  if (control?.parentElement) resizeObserver?.observe(control.parentElement);
   window.addEventListener('resize', () => {
+    updateCompactMode();
     const selectedTab = tabs.find((tab) => tab.getAttribute('aria-selected') === 'true');
     if (selectedTab) setSelector(selectedTab);
   });

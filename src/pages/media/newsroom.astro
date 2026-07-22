@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryTabs from '../../components/CategoryTabs.astro';
 import PageHero from '../../components/PageHero.astro';
 import newsData from '../../data/news.json';
 import '../../styles/category-tabs.css';
@@ -409,17 +410,6 @@ const tagSections = [
           transform: rotate(-180deg);
         }
       }
-      @media (max-width: 768px) {
-        .category-tabs button {
-          flex-direction: column;
-          align-items: center;
-          padding: 8px 14px;
-        }
-        .category-tabs .tab-count {
-          display: block;
-          margin-top: 0;
-        }
-      }
     </style>
   </Fragment>
 
@@ -484,29 +474,14 @@ const tagSections = [
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="category-tabs"
-                    id="tab-bar"
-                    role="tablist"
-                    aria-label="News categories"
-                  >
-                    <div class="selector"></div>
-                    {
-                      newsCategories.map(({ category, items }, index) => (
-                        <button
-                          type="button"
-                          id={`news-tab-${index}`}
-                          role="tab"
-                          aria-selected={index === 0 ? 'true' : 'false'}
-                          aria-controls={`news-panel-${index}`}
-                          data-index={index}
-                        >
-                          <span class="tab-label">{category}</span>
-                          <span class="tab-count"> ({items.length})</span>
-                        </button>
-                      ))
-                    }
-                  </div>
+                  <CategoryTabs
+                    ariaLabel="News categories"
+                    categories={newsCategories.map(({ category, items }) => ({
+                      label: category,
+                      count: items.length,
+                    }))}
+                    idPrefix="news"
+                  />
                 </div>
               </div>
               <div id="news-content" class="news-content">
@@ -585,7 +560,8 @@ const tagSections = [
   <script>
     import { initCategoryTabs } from '../../scripts/category-tabs';
 
-    const tabList = document.getElementById('tab-bar')!;
+    const tabList = document.getElementById('news-tabs')!;
+    const select = document.getElementById('news-select') as HTMLSelectElement;
     const content = document.getElementById('news-content')!;
     const panels = Array.from(content.querySelectorAll<HTMLElement>('.news-panel'));
     const categories = panels.map((panel) => panel.dataset.category!);
@@ -677,9 +653,10 @@ const tagSections = [
     const categoryTabs = initCategoryTabs({
       tabList,
       panels,
+      select,
       onChange: ({ index, source, animate, showPanels }) => {
         currentTabIndex = index;
-        if (source === 'pointer' || source === 'keyboard') updateUrl();
+        if (source === 'pointer' || source === 'keyboard' || source === 'select') updateUrl();
         if (!animate) {
           showPanels();
           return;
