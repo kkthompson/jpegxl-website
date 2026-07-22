@@ -200,10 +200,8 @@
 }
 
 .section-jpeg-xl-hero .text-xl-light.is-centered {
-  width: 100%;
   font-size: clamp(1rem, 0.86rem + 0.7vw, 1.5rem);
   line-height: 1.5;
-  text-wrap: pretty;
 }
 
 /* ------------------------------------------------------------------ *
@@ -217,37 +215,6 @@
   width: 100%;
   max-width: min(56rem, 100%);
   margin-inline: auto;
-}
-
-.text-xl-light.is-centered {
-  width: 100%;
-  /* Cap the measure for comfortable reading; always narrower than the media. */
-  max-width: min(62ch, 100%);
-  margin-inline: auto;
-  /* 20px floor → 26px ceiling, scaling smoothly with the viewport. */
-  font-size: clamp(1.25rem, 1.125rem + 0.56vw, 1.625rem);
-  /* Barlow ships discrete weights only, so the weight steps rather than
-     interpolates: 400 while the type is small, 300 once it grows past ~960px. */
-  font-weight: 400;
-  /* em-based so the tracking keeps scaling with the type at every size
-     (Webflow otherwise zeroes this out at ≤479px). */
-  letter-spacing: -0.01em;
-  line-height: 1.55;
-  text-wrap: pretty;
-  word-break: normal;
-  overflow-wrap: break-word;
-}
-
-@media (min-width: 960px) {
-  .text-xl-light.is-centered {
-    font-weight: 300;
-  }
-}
-
-/* Feature-grid body copy ("And Much More", etc.) — balance the rag and avoid
-   widows the same way as the centered section paragraphs. */
-.text-l-medium {
-  text-wrap: pretty;
 }
 
 /* Format pills (JPEG / JPEG XL / WEBP / …) above the images — dark frosted

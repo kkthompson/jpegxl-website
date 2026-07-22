@@ -362,6 +362,7 @@ blockquote {
 
 .display-xl-bold.fill-gradient {
   background-image: linear-gradient(90deg, var(--brand--teal-bright--P3--500), var(--brand--blue--P3--500));
+  background-image: linear-gradient(90deg in oklch, var(--brand--teal-bright--P3--500), var(--brand--blue--P3--500));
   letter-spacing: -.02em;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
@@ -391,16 +392,24 @@ blockquote {
 }
 
 .text-xl-light.is-centered {
-  color: var(--text--color--text-white);
   text-align: center;
+  width: 100%;
   letter-spacing: -.01em;
-  max-width: none; /* max-width: 1024px; This was from the second definition */
-  font-size: clamp(1rem, calc(0.812rem + 0.939vw), 1.625rem);
-  line-height: 1.45em;
+  max-width: min(62ch, 100%);
+  margin-inline: auto;
+  font-size: clamp(1.25rem, 1.125rem + .56vw, 1.625rem);
+  font-weight: 400;
+  line-height: 1.55;
   white-space: normal;
-  word-break: keep-all;
-  overflow-wrap: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
   text-wrap: pretty;
+}
+
+@media (min-width: 960px) {
+  .text-xl-light.is-centered {
+    font-weight: 300;
+  }
 }
 
 .text-xl-light.is-centered._2lines {
@@ -795,6 +804,7 @@ blockquote {
 .navbar_headertext {
   color: var(--brand--teal-bright--P3--700);
   background-image: linear-gradient(90deg, var(--brand--teal-bright--P3--500), var(--brand--blue--P3--500));
+  background-image: linear-gradient(90deg in oklch, var(--brand--teal-bright--P3--500), var(--brand--blue--P3--500));
   letter-spacing: -.02em;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
@@ -970,13 +980,14 @@ blockquote {
   font-weight: 400;
   line-height: 1.5em;
   text-align: left;
+  text-wrap: pretty;
 }
 
 .text-l-medium.large {
   color: var(--text--color--text-white);
   text-align: center;
   letter-spacing: -.01em;
-  font-size: clamp(1.125rem, calc(0.993rem + 0.563vw), 1.5rem);
+  font-size: clamp(1.25rem, calc(0.993rem + 0.563vw), 1.75rem);
   font-weight: 300;
   text-wrap: pretty;
 }
@@ -3771,12 +3782,6 @@ blockquote {
     padding-bottom: 12px;
   }
 
-  .display-xl-bold.fill-gradient {
-    letter-spacing: -.02em;
-    align-self: center;
-    font-weight: 700;
-  }
-
   .page-wrapper {
     color: var(--text--color--text-white);
     justify-content: flex-start;
@@ -4852,25 +4857,6 @@ blockquote {
     color: var(--text--color--text-white);
   }
 
-
-  .display-xl-bold.fill-gradient {
-    letter-spacing: -.02em;
-    max-width: none;
-  }
-
-  .text-xl-light {
-    line-height: 1.45em;
-  }
-
-  .text-xl-light.is-centered {
-    line-height: 1.45;
-  }
-
-  .text-xl-light.is-centered._2lines {
-    width: 10ch;
-    line-height: 1.2;
-  }
-
   .page-wrapper {
     grid-column-gap: 0px;
     grid-row-gap: 0px;
@@ -4964,17 +4950,6 @@ blockquote {
     margin-bottom: 0;
   }
 
-
-  .text-l-medium {
-    color: var(--text--color--text-white);
-    font-weight: 400;
-    line-height: 1.45em;
-  }
-
-  .text-l-medium.large {
-    margin-bottom: 0;
-    font-weight: 300;
-  }
 
   .container-content-fullspan {
     grid-column-gap: 0px;
@@ -5816,25 +5791,6 @@ blockquote {
     margin-right: 0.5em;
   }
 
-  .display-xl-bold.fill-gradient {
-    letter-spacing: 0;
-    margin-bottom: 0;
-    padding-bottom: 10px;
-  }
-
-  .text-xl-light {
-    line-height: 1.45em;
-  }
-
-  .text-xl-light.is-centered {
-    letter-spacing: 0;
-    line-height: 1.45em;
-  }
-
-  .text-xl-light.is-centered._2lines {
-    width: 6em;
-  }
-
   .page-wrapper {
     grid-column-gap: 0px;
     grid-row-gap: 0px;
@@ -5916,15 +5872,6 @@ blockquote {
 
   .text-xl-regular.white.reduce-width.bold {
     margin-bottom: 0;
-  }
-
-  .text-l-medium {
-    margin-bottom: .5rem;
-    line-height: 1.45;
-  }
-
-  .text-l-medium.large {
-    font-weight: 300;
   }
 
   .container-content-fullspan {
@@ -6501,23 +6448,6 @@ blockquote {
     height: 80px;
   }
 
-  .display-xl-bold.fill-gradient {
-    width: 100%;
-  }
-  .text-xl-light {
-    line-height: 1.45em;
-  }
-
-  .text-xl-light.is-centered {
-    letter-spacing: 0;
-    width: 100%;
-    line-height: 1.45em;
-  }
-
-  .text-xl-light.is-centered._2lines {
-    width: 6em;
-  }
-
   .page-wrapper {
     grid-column-gap: 0px;
     grid-row-gap: 0px;
@@ -6611,11 +6541,6 @@ blockquote {
     word-break: keep-all;
     overflow-wrap: normal;
   }
-
-  .text-l-medium {
-    line-height: 1.4em;
-  }
-
 
   .container-content-fullspan {
     width: 100%;
