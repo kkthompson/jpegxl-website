@@ -240,28 +240,6 @@
 }
 
 /* ------------------------------------------------------------------ *
- * Section headlines ("Capture Through Delivery", "Fast Encoding &
- * Decoding", …) and their teal subheads. The base sizes are already
- * fluid but bottom out at 2rem, so they stop shrinking and wrap awkwardly
- * on small screens. Lower the floor + balance the wrap so they keep
- * scaling down smoothly. (Hero copy keeps its own rules above.)
- * ------------------------------------------------------------------ */
-.display-l-bold {
-  font-size: clamp(1.5rem, 1rem + 3.2vw, 3.75rem);
-  /* Tracked in, em-based so it holds at every size (base tracks it out). */
-  letter-spacing: -0.02em;
-  line-height: 1.08;
-  text-wrap: balance;
-}
-
-.text-xxl-regular.centered.teal {
-  font-size: clamp(1.25rem, 0.85rem + 2.2vw, 2.75rem);
-  letter-spacing: -0.03em;
-  line-height: 1.12;
-  text-wrap: balance;
-}
-
-/* ------------------------------------------------------------------ *
  * Section diagrams/graphs ("Capture Through Delivery" camera diagram and
  * the "Fast Encoding & Decoding" graph carousel). Drop Webflow's fixed
  * 4rem gutters + min-width:1440 height swap and let them scale fluidly:

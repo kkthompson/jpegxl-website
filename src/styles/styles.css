@@ -828,7 +828,7 @@ blockquote {
 .display-l-bold {
   color: var(--white);
   text-align: center;
-  letter-spacing: .01em;
+  letter-spacing: -.02em;
   flex-flow: wrap;
   justify-content: center;
   width: auto;
@@ -836,9 +836,10 @@ blockquote {
   margin-top: 0;
   margin-bottom: 0;
   font-family: var(--font--font-family--barlow);
-  font-size: clamp(2rem, calc(1.384rem + 2.629vw), 3.75rem);
+  font-size: clamp(1.5rem, 1rem + 3.2vw, 3.75rem);
   font-weight: 700;
-  line-height: 1.2em;
+  line-height: 1.08;
+  text-wrap: balance;
   display: block;
 }
 
@@ -883,20 +884,15 @@ blockquote {
   color: var(--white)
 }
 
-.headline-s-semibold.white {
-  color: var(--white);
-}
-
 .headline-s-semibold.centered {
   text-align: center;
 }
 
-.headline-s-semibold.centered.white {
-  max-width: none;
-}
-
-.headline-s-semibold.centered.white._2line {
-  font-size: 28px;
+.headline-s-semibold.centered._2line {
+  width: min(10em, 100%);
+  margin-inline: auto;
+  line-height: 1.15;
+  text-wrap: balance;
 }
 
 .headline-s-semibold.lime {
@@ -927,9 +923,10 @@ blockquote {
   text-transform: none;
   align-self: center;
   width: 100%;
-  font-size: clamp(1.375rem, calc(0.891rem + 2.066vw), 2.75rem);
+  font-size: clamp(1.25rem, .85rem + 2.2vw, 2.75rem);
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1.12;
+  text-wrap: balance;
 }
 
 .text-xxl-regular.white {
@@ -984,12 +981,10 @@ blockquote {
 }
 
 .text-l-medium.large {
-  color: var(--text--color--text-white);
   text-align: center;
   letter-spacing: -.01em;
   font-size: clamp(1.25rem, calc(0.993rem + 0.563vw), 1.75rem);
   font-weight: 300;
-  text-wrap: pretty;
 }
 
 .container-content-fullspan {
@@ -3838,32 +3833,10 @@ blockquote {
     height: 24px;
   }
 
-  .display-l-bold {
-    letter-spacing: -.01em;
-    margin-bottom: 0;
-  }
   .headline-l-semibold.white {
     color: var(--white);
     letter-spacing: .01em;
     line-height: 1.25;
-  }
-
-  .headline-s-semibold.centered.white._2line {
-    max-width: 10em;
-  }
-
-  .text-xxl-regular {
-    color: var(--text--color--text-white);
-    font-weight: 500;
-    line-height: 1.1em;
-  }
-
-  .text-xxl-regular.centered.teal {
-    letter-spacing: -.03em;
-    text-transform: none;
-    column-count: auto;
-    font-weight: 300;
-    line-height: 1.1em;
   }
 
   .text-xxl-regular.white {
@@ -4917,33 +4890,9 @@ blockquote {
     height: 120px;
   }
 
-  .display-l-bold {
-    letter-spacing: 0;
-    width: 100%;
-    margin-bottom: 0;
-  }
-
   .headline-l-semibold.centered.white {
     font-weight: 500;
     line-height: 1.1em;
-  }
-
-  .headline-s-semibold.centered.white._2line {
-    letter-spacing: 0;
-    width: 10em;
-    line-height: 1.15em;
-  }
-
-  .text-xxl-regular {
-    margin-bottom: 16px;
-    line-height: 44px;
-  }
-
-  .text-xxl-regular.centered.teal {
-    letter-spacing: -.025em;
-    margin-bottom: 0;
-    font-weight: 400;
-    line-height: 1.15;
   }
 
   .text-xxl-regular.white, .text-xl-regular.white.reduce-width.bold {
@@ -5846,10 +5795,6 @@ blockquote {
     height: 80px;
   }
 
-  .display-l-bold {
-    line-height: 1.1;
-  }
-
   .headline-l-semibold.centered.white {
     line-height: 1.1em;
   }
@@ -5857,18 +5802,6 @@ blockquote {
   .headline-l-semibold.white {
     line-height: 1.25;
   }
-
-  .headline-s-semibold.centered.white._2line {
-    line-height: 1.15;
-  }
-
-  .text-xxl-regular.centered.teal {
-    letter-spacing: -.02em;
-    margin-bottom: 0;
-    font-weight: 400;
-    line-height: 1.15em;
-  }
-
 
   .text-xl-regular.white.reduce-width.bold {
     margin-bottom: 0;
@@ -6502,33 +6435,8 @@ blockquote {
     height: 80px;
   }
 
-  .display-l-bold {
-    letter-spacing: .01em;
-    width: 100%;
-    line-height: 1.05;
-  }
-
   .headline-l-semibold.centered.white {
     letter-spacing: -.016em;
-  }
-
-  .headline-s-semibold.centered.white {
-    font-size: 26px;
-    line-height: 1.2em;
-  }
-
-  .headline-s-semibold.centered.white._2line {
-    letter-spacing: 0;
-    width: auto;
-    font-weight: 700;
-  }
-
-  .text-xxl-regular.centered.teal {
-    letter-spacing: -.03em;
-    width: 100%;
-    max-width: none;
-    font-weight: 400;
-    line-height: 1.15em;
   }
 
   .text-xxl-regular.white {
