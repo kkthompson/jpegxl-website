@@ -245,6 +245,227 @@ nav.scrolled .navbar_logo-link.w--current {
   margin-left: 0.25rem;
 }
 
+.navbar-search-trigger {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.82);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.navbar-search-trigger svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.navbar-search-trigger:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--base--white);
+}
+
+.navbar-search-trigger:focus-visible {
+  outline: 2px solid oklch(83.77% 0.1936 191.95);
+  outline-offset: 3px;
+}
+
+.site-search-open {
+  overflow: hidden;
+}
+
+.site-search-dialog {
+  position: fixed;
+  z-index: 1100;
+  inset: 0;
+  display: grid;
+  place-items: start center;
+  overflow-y: auto;
+  padding: clamp(1rem, 4vw, 3rem);
+}
+
+.site-search-dialog[hidden] {
+  display: none;
+}
+
+.site-search-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 7, 10, 0.76);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.site-search-panel {
+  position: relative;
+  width: min(42rem, 100%);
+  margin-top: clamp(4rem, 12vh, 8rem);
+  padding: clamp(1.125rem, 3vw, 1.75rem);
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  border-radius: 1rem;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--brand--teal-bright--500) 17%, transparent), transparent 45%),
+    rgba(15, 18, 22, 0.97);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.55), inset 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.site-search-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.site-search-heading h2 {
+  margin: 0;
+  color: var(--white);
+  font-family: Barlow, sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.site-search-close {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.site-search-close:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--white);
+}
+
+.site-search-close:focus-visible,
+.site-search-result:focus-visible {
+  outline: 2px solid var(--brand--teal-bright--500);
+  outline-offset: 3px;
+}
+
+.site-search-form {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.site-search-form:focus-within {
+  border-color: color-mix(in srgb, var(--brand--teal-bright--500) 72%, rgba(255, 255, 255, 0.2));
+}
+
+.site-search-form svg {
+  flex: 0 0 auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: var(--brand--teal-bright--500);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.site-search-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--white);
+  font-family: Barlow, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.35;
+}
+
+.site-search-form input:focus-visible {
+  outline: 0;
+}
+
+.site-search-form input::placeholder {
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.site-search-status {
+  min-height: 1.25rem;
+  margin: 0.875rem 0 0;
+  color: rgba(255, 255, 255, 0.58);
+  font-family: Barlow, sans-serif;
+  font-size: 0.875rem;
+}
+
+.site-search-results {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+}
+
+.site-search-result {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid transparent;
+  border-radius: 0.625rem;
+  color: rgba(255, 255, 255, 0.86);
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.site-search-result:hover {
+  border-color: color-mix(in srgb, var(--brand--teal-bright--500) 45%, transparent);
+  background: color-mix(in srgb, var(--brand--teal-bright--500) 11%, transparent);
+}
+
+.site-search-result-title {
+  color: var(--brand--teal-bright--500);
+  font-family: Barlow, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.site-search-result-excerpt {
+  color: rgba(255, 255, 255, 0.7);
+  font-family: Barlow, sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.site-search-result-excerpt mark {
+  padding: 0 0.08em;
+  background: color-mix(in srgb, var(--brand--teal-bright--500) 32%, transparent);
+  color: var(--white);
+}
+
+@media screen and (max-width: 479px) {
+  .site-search-dialog {
+    padding: 0.75rem;
+  }
+
+  .site-search-panel {
+    margin-top: 4.5rem;
+    border-radius: 0.75rem;
+  }
+}
+
 /* display: flex above would otherwise override the browser's built-in
    [hidden] -> display: none, making the decoder info show on every page. */
 .navbar-jxl-decoder-info[hidden] {
