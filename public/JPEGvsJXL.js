@@ -74,32 +74,18 @@ const displayData = (array, scrollValue, type) => {
     elements.imageTitle.textContent = obj_key;
     const data = initialLoadedImageObject[obj_key][sliderValue];
     if (!data) return;
-    elements.JPEGCompare_JPEGImage.src = `ComparisonImages/${data.JPEG_FileName}`;
-    
-    // Create picture element for JXL with WebP fallback
-    const jxlPath = `ComparisonImages/${data.JXL_FileName}`;
-    const webpPath = `${jxlPath}.webp`;
-    if (elements.JPEGCompare_JXLImage.tagName !== 'PICTURE') {
-        const pictureElement = document.createElement('picture');
-        const sourceElement = document.createElement('source');
-        sourceElement.srcset = jxlPath;
-        sourceElement.type = 'image/jxl';
-        pictureElement.appendChild(sourceElement);
-        const imgElement = document.createElement('img');
-        imgElement.src = webpPath;
-        imgElement.alt = obj_key;
-        imgElement.draggable = false;
-        pictureElement.appendChild(imgElement);
-        elements.JPEGCompare_JXLImage.parentNode.replaceChild(pictureElement, elements.JPEGCompare_JXLImage);
-        elements.JPEGCompare_JXLImage = pictureElement;
-    } else {
-        const sourceElement = elements.JPEGCompare_JXLImage.querySelector('source');
-        sourceElement.srcset = jxlPath;
-        sourceElement.type = 'image/jxl';
-        const imgElement = elements.JPEGCompare_JXLImage.querySelector('img');
-        imgElement.src = webpPath;
-        imgElement.alt = obj_key;
-    }
+    const imageFolder = type === 'JPEGCompareSize'
+        ? 'ComparisonImages/JPEG_CompareSizeSameQuality'
+        : 'ComparisonImages/JPEG_CompareQualitySameSize';
+    elements.JPEGCompare_JPEGImage.src = `${imageFolder}/${data.JPEG_FileName}`;
+
+    const jxlPath = `${imageFolder}/${data.JXL_FileName}`;
+    const sourceElement = elements.JPEGCompare_JXLImage.querySelector('source');
+    sourceElement.srcset = jxlPath;
+    sourceElement.type = 'image/jxl';
+    const imgElement = elements.JPEGCompare_JXLImage.querySelector('img');
+    imgElement.src = jxlPath;
+    imgElement.alt = obj_key;
     const formatSize = (sizeInBytes) => (sizeInBytes / 1024).toFixed(1);
     const formatSSIMU2 = (score) => parseFloat(score).toFixed(1);
     const formatDSSIM = (value) => value ? (value * 1000).toFixed(2) : 'N/A';

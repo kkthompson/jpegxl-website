@@ -1358,6 +1358,16 @@ blockquote {
   line-height: 1.5;
 }
 
+.footer-encoder-note {
+  display: block;
+  max-width: 65ch;
+  margin: 1rem auto;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  white-space: normal;
+}
+
 .footer_bottom-wrapper {
   grid-column-gap: 2rem;
   grid-row-gap: .5rem;
@@ -3219,7 +3229,7 @@ blockquote {
 
 .text-all-caps-micro-medium {
   color: var(--brand--teal-bright--P3--600);
-  letter-spacing: .1em;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
   white-space: nowrap;
   overflow-wrap: normal;
@@ -3393,7 +3403,6 @@ blockquote {
 
 .text-all-caps-micro-medium-white {
   color: var(--text--color--text-white);
-  letter-spacing: .1em;
   text-transform: uppercase;
   white-space: nowrap;
   overflow-wrap: normal;

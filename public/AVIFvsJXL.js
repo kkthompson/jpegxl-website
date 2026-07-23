@@ -74,32 +74,18 @@ const displayDataAVIF = (array, scrollValue, type) => {
     elementsAVIF.imageTitleAVIF.textContent = obj_key;
     const data = initialLoadedImageObjectAVIF[obj_key][sliderValue];
     if (!data) return;
-    elementsAVIF.AVIFCompare_AVIFImage.src = `ComparisonImages/${data.AVIF_FileName}`;
+    const imageFolderAVIF = type === 'AVIFCompareSize'
+        ? 'ComparisonImages/AVIF_CompareSizeSameQuality'
+        : 'ComparisonImages/AVIF_CompareQualitySameSize';
+    elementsAVIF.AVIFCompare_AVIFImage.src = `${imageFolderAVIF}/${data.AVIF_FileName}`;
 
-    // Create picture element for JXL with WebP fallback
-    const jxlPath = `ComparisonImages/${data.JXL_FileName}`;
-    const webpPath = `${jxlPath}.webp`;
-    if (elementsAVIF.AVIFCompare_JXLImage.tagName !== 'PICTURE') {
-        const pictureElement = document.createElement('picture');
-        const sourceElement = document.createElement('source');
-        sourceElement.srcset = jxlPath;
-        sourceElement.type = 'image/jxl';
-        pictureElement.appendChild(sourceElement);
-        const imgElement = document.createElement('img');
-        imgElement.src = webpPath;
-        imgElement.alt = obj_key;
-        imgElement.draggable = false;
-        pictureElement.appendChild(imgElement);
-        elementsAVIF.AVIFCompare_JXLImage.parentNode.replaceChild(pictureElement, elements.AVIFCompare_JXLImage);
-        elementsAVIF.AVIFCompare_JXLImage = pictureElement;
-    } else {
-        const sourceElement = elementsAVIF.AVIFCompare_JXLImage.querySelector('source');
-        sourceElement.srcset = jxlPath;
-        sourceElement.type = 'image/jxl';
-        const imgElement = elementsAVIF.AVIFCompare_JXLImage.querySelector('img');
-        imgElement.src = webpPath;
-        imgElement.alt = obj_key;
-    }
+    const jxlPath = `${imageFolderAVIF}/${data.JXL_FileName}`;
+    const sourceElement = elementsAVIF.AVIFCompare_JXLImage.querySelector('source');
+    sourceElement.srcset = jxlPath;
+    sourceElement.type = 'image/jxl';
+    const imgElement = elementsAVIF.AVIFCompare_JXLImage.querySelector('img');
+    imgElement.src = jxlPath;
+    imgElement.alt = obj_key;
     const formatSizeAVIF = (sizeInBytes) => (sizeInBytes / 1024).toFixed(1);
     const formatSSIMU2AVIF = (score) => parseFloat(score).toFixed(1);
     const formatDSSIMAVIF = (value) => value ? (value * 1000).toFixed(2) : 'N/A';
@@ -143,8 +129,8 @@ const displayDataAVIF = (array, scrollValue, type) => {
 
 /* Get Slider Value */
 const getSliderValueAVIF = (scrollValue, type) => {
-    const qualityMap = { "0": "ML", "25": "M", "50": "MH", "75": "H" };
-    const sizeMap = { "0": "S", "25": "M", "50": "L", "75": "XL" };
+    const qualityMap = { "0": "Medium", "25": "Med-High", "50": "High", "75": "Very High", "100": "Lossless" };
+    const sizeMap = { "0": "S", "25": "M", "50": "L", "75": "XL", "100": "XX-Large" };
     return type === 'AVIFCompareSize' ? qualityMap[scrollValue] : sizeMap[scrollValue];
 };
 
@@ -181,7 +167,9 @@ const loadDataAVIF = (data, type) => {
         const title = item.Title;
         const value = item[keyAVIF];
         if (!objAVIF[title]) {
-            objAVIF[title] = type === 'AVIFCompareSize' ? { "H": {}, "MH": {}, "M": {}, "ML": {} } : { "XL": {}, "L": {}, "M": {}, "S": {} };
+            objAVIF[title] = type === 'AVIFCompareSize'
+                ? { "Lossless": {}, "Very High": {}, "High": {}, "Med-High": {}, "Medium": {} }
+                : { "XX-Large": {}, "XL": {}, "L": {}, "M": {}, "S": {} };
             arrayAVIF.push({ [title]: objAVIF[title] });
         }
         objAVIF[title][value] = item;

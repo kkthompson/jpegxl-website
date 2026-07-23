@@ -19,8 +19,51 @@ const keywords =
   keywords={keywords}
   author="JPEG XL Community"
   footerVariant="full"
+  usesJxlWasmFallback
 >
   <Fragment slot="head">
+    <!-- JXL.js WASM fallback for the comparison sliders, gated on a native-JXL
+         probe (same probe + sessionStorage key as the nav's decoder (i) icon).
+         Native-JXL browsers skip the COOP/COEP service worker entirely so the
+         homepage stays un-isolated and the footer hits.sh badge keeps working;
+         other browsers register the worker (one-time reload) and then load the
+         decoder once the page is cross-origin isolated. -->
+    <script is:inline>
+      (() => {
+        const load = (src) => {
+          const script = document.createElement('script');
+          script.src = src;
+          document.head.appendChild(script);
+        };
+        const boot = (nativeJxl) => {
+          if (nativeJxl) return;
+          load('/serviceworker.min.js');
+          if (window.crossOriginIsolated) load('/resources/jxl.min.js');
+        };
+        let cached = null;
+        try {
+          cached = window.sessionStorage.getItem('jxl-native');
+        } catch {}
+        if (cached !== null) return boot(cached === '1');
+
+        const probe = new Image();
+        let settled = false;
+        const finish = (supported, remember) => {
+          if (settled) return;
+          settled = true;
+          if (remember) {
+            try {
+              window.sessionStorage.setItem('jxl-native', supported ? '1' : '0');
+            } catch {}
+          }
+          boot(supported);
+        };
+        probe.onload = () => finish(true, true);
+        probe.onerror = () => finish(false, true);
+        probe.src = '/images/jxl-probe.jxl';
+        window.setTimeout(() => finish(false, false), 4000);
+      })();
+    </script>
 
     <style is:inline>
       .JPEGCommitte-logo-carousel {
@@ -753,38 +796,17 @@ const keywords =
           <div class="container-content-vflex width-page-max centered">
             <div class="JPEGCommitte-logo-carousel">
               <div class="JPEGCommitte-logo-container">
-                <object class="JPEGCommitte-logo" style="--i: 0;" data="/images/JPEG-Committee-logos/jpegxs-logo.svg" type="image/svg+xml">
-                  JPEG XS
-                </object>
-                <object class="JPEGCommitte-logo" style="--i: 1;" data="/images/JPEG-Committee-logos/aic-logo.svg" type="image/svg+xml">
-                  AIC
-                </object>
-                <object class="JPEGCommitte-logo" style="--i: 2;" data="/images/JPEG-Committee-logos/jpeg2000-logo.svg" type="image/svg+xml">
-                  JPEG 2000
-                </object>
-                <object class="JPEGCommitte-logo" style="--i: 3;" data="/images/JPEG-Committee-logos/jpeg-logo.svg" type="image/svg+xml">
-                  JPEG
-                </object>
-                <object class="JPEGCommitte-logo" style="--i: 4;" data="/images/JPEG-Committee-logos/jpegxl-logo.svg" type="image/svg+xml">
-                  JPEG XL
-                </object>
-                <object class="JPEGCommitte-logo" style="--i: 5;" data="/images/JPEG-Committee-logos/jpegpleno-logo.svg" type="image/svg+xml">
-                  JPEG Pleno
-                </object>
-                <object
-                  class="JPEGCommitte-logo"
-                  style="--i: 6;"
-                  data="/images/JPEG-Committee-logos/jpegsystems-logo.svg"
-                  type="image/svg+xml"
-                >
-                  JPEG Systems
-                </object>
-                <object class="JPEGCommitte-logo" style="--i: 7;" data="/images/JPEG-Committee-logos/jpegai-logo.svg" type="image/svg+xml">
-                  JPEG AI
-                </object>
-                <object class="JPEGCommitte-logo" style="--i: 8;" data="/images/JPEG-Committee-logos/jpegtrust-logo.svg" type="image/svg+xml">
-                  JPEG Trust
-                </object>
+                <!-- Plain <img> rather than <object>: object/embed loads are embedded
+                     documents, which COEP blocks on the isolated (WASM-decoder) homepage. -->
+                <img class="JPEGCommitte-logo" style="--i: 0;" src="/images/JPEG-Committee-logos/jpegxs-logo.svg" alt="JPEG XS" />
+                <img class="JPEGCommitte-logo" style="--i: 1;" src="/images/JPEG-Committee-logos/aic-logo.svg" alt="AIC" />
+                <img class="JPEGCommitte-logo" style="--i: 2;" src="/images/JPEG-Committee-logos/jpeg2000-logo.svg" alt="JPEG 2000" />
+                <img class="JPEGCommitte-logo" style="--i: 3;" src="/images/JPEG-Committee-logos/jpeg-logo.svg" alt="JPEG" />
+                <img class="JPEGCommitte-logo" style="--i: 4;" src="/images/JPEG-Committee-logos/jpegxl-logo.svg" alt="JPEG XL" />
+                <img class="JPEGCommitte-logo" style="--i: 5;" src="/images/JPEG-Committee-logos/jpegpleno-logo.svg" alt="JPEG Pleno" />
+                <img class="JPEGCommitte-logo" style="--i: 6;" src="/images/JPEG-Committee-logos/jpegsystems-logo.svg" alt="JPEG Systems" />
+                <img class="JPEGCommitte-logo" style="--i: 7;" src="/images/JPEG-Committee-logos/jpegai-logo.svg" alt="JPEG AI" />
+                <img class="JPEGCommitte-logo" style="--i: 8;" src="/images/JPEG-Committee-logos/jpegtrust-logo.svg" alt="JPEG Trust" />
               </div>
             </div>
           </div>

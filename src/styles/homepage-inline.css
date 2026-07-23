@@ -1257,6 +1257,32 @@ main > .section-lossless-transcoding {
   transform: translateX(40%);
 }
 
+/* AVIF sliders have five stops (0/25/50/75/100). Center each label on its
+   stop instead of flex space-between, which positions labels by their text-box
+   edges and so drifts with word length. The thumb's center travels from half
+   the thumb width to 100% minus half, so stops are interpolated inside that
+   range; --thumb matches each slider's thumb width. */
+.avif-five-labels {
+  display: block;
+  position: relative;
+  height: 1.3em;
+}
+.avif-five-labels > * {
+  position: absolute;
+  top: 0;
+  left: calc(var(--thumb, 12px) / 2 + (100% - var(--thumb, 12px)) * var(--stop, 0));
+  transform: translateX(-50%);
+  margin: 0;
+  white-space: nowrap;
+}
+.avif-five-labels > :nth-child(1) { --stop: 0; }
+.avif-five-labels > :nth-child(2) { --stop: 0.25; }
+.avif-five-labels > :nth-child(3) { --stop: 0.5; }
+.avif-five-labels > :nth-child(4) { --stop: 0.75; }
+.avif-five-labels > :nth-child(5) { --stop: 1; }
+.size-range-labels.avif-five-labels { --thumb: 24px; }
+.range-labels.avif-five-labels { --thumb: 20px; }
+
 /* Information (i) + score text styles */
 .heading-desktop-h6 {
   font-family: var(--font--font-family--barlow);
@@ -1498,10 +1524,10 @@ main > .section-lossless-transcoding {
 .avif-jxl-tabs .label-left .text-all-caps-micro-medium,
 .avif-jxl-tabs .label-right .text-all-caps-micro-medium {
   font-size: 0.8rem;
-  letter-spacing: 0.1em;
+  letter-spacing: -0.01em;
   white-space: normal;
   text-wrap: balance;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .jpeg-jxl-tabs .headline-l-semibold,
@@ -1738,9 +1764,20 @@ main > .section-lossless-transcoding {
 }
 
 @media (max-width: 767px) {
+  .section-jpeg-comparison .side-controls,
+  .section-avif-comparison .side-controls {
+    padding-block: 0.25rem;
+  }
+
   .jpeg-jxl-tabs,
   .avif-jxl-tabs {
+    margin-top: 0;
     column-gap: clamp(0.35rem, 2vw, 0.75rem);
+  }
+
+  .jpeg-jxl-tabs .slide-container,
+  .avif-jxl-tabs .slide-container {
+    margin-top: 1.25rem;
   }
 }
 
